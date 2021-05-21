@@ -21,8 +21,8 @@ Additionally, if this is the first time you're running PastelWallet or a pasteld
 PastelWallet is written in Electron/Javascript and can be build from source. Note that if you are compiling from source, you won't get the embedded pasteld by default. You can either run an external pasteld, or compile pasteld as well.
 
 ```
-git clone https://github.com/PastelNetwork/Pastel_Electron_Wallet.git
-cd Pastel_Electron_Wallet
+git clone https://github.com/RivieraMedia/pastel-wallent-upgrade.git
+cd pastel-wallent-upgrade
 
 yarn install
 yarn make
