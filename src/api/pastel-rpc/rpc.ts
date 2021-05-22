@@ -8,14 +8,12 @@ export type TRPCConfig = {
 
 export async function rpc<T>(
   method: string,
-  params: string[],
+  params: (string | boolean | number)[],
   rpcConfig: TRPCConfig,
 ): Promise<T> {
   const { url, username, password } = rpcConfig
   let response: AxiosResponse
-
   try {
-    console.log(url)
     response = await axios(url, {
       data: {
         jsonrpc: '2.0',
@@ -31,7 +29,7 @@ export async function rpc<T>(
     })
   } catch (err) {
     if (err.response) {
-      throw new Error(`api/pastel-rpc server error: ${err.response}`)
+      throw new Error(`api/pastel-rpc server error: ${err.message}`)
     }
 
     if (err.request) {

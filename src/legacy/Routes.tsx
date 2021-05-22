@@ -9,12 +9,11 @@ import routes from './constants/routes.json'
 import App from './containers/App'
 import Dashboard from './components/Dashboard'
 import Send from './components/Send'
-import Receive from './components/Receive'
-import LoadingScreen from './components/LoadingScreen'
-import AppState, {
+import { Receive } from '../features/receive'
+import LoadingScreen from '../features/loading'
+import {
   AddressBalance,
   TotalBalance,
-  Transaction,
   SendPageState,
   ToAddr,
   RPCConfig,
@@ -24,7 +23,6 @@ import AppState, {
 } from './components/AppState'
 import RPC from './rpc'
 import Utils from './utils/utils'
-import { PastelURITarget } from './utils/uris'
 import Pasteld from './components/Pasteld'
 import AddressBook from './components/Addressbook'
 import AddressbookImpl from './utils/AddressbookImpl'
@@ -35,9 +33,37 @@ import { PastelID } from '../features/pastelID'
 import WormholeConnection from './components/WormholeConnection'
 import { connect } from 'react-redux'
 import { setPastelConf } from '../features/pastelConf'
+import { PastelDBThread } from '../features/pastelDB'
 import { openPastelPaperWalletModal } from '../features/pastelPaperWalletGenerator'
+import PastelSpriteEditorToolModal, {
+  openPastelSpriteEditorToolModal,
+} from '../features/pastelSpriteEditorTool'
+import PastelPhotopeaModal, {
+  openPastelPhotopeaModal,
+} from '../features/pastelPhotopea'
+import AboutModal, { openAboutModal } from '../features/about'
+import SquooshToolModal, { openSquooshToolModal } from '../features/squooshTool'
 // @ts-ignore
-import ExpertConsole from './components/ExpertConsole'
+import ExpertConsole from '../features/expertConsole'
+import { openUpdateToast } from '../features/updateToast'
+import PastelUtils from '../common/utils/utils'
+import Creator from '../features/creator'
+import Collector from '../features/collector'
+import Nft from '../features/nft'
+
+export type TWalletInfo = {
+  connections: number
+  currencyName: string
+  disconnected: boolean
+  latestBlock: number
+  pslPrice: number | undefined
+  solps: number
+  testnet: boolean
+  verificationProgress: number
+  version: number
+}
+
+const period = 1000 * 10
 
 class RouteApp extends React.Component<any, any> {
   constructor(props: any) {
@@ -67,29 +93,31 @@ class RouteApp extends React.Component<any, any> {
 
   rpc: any
   companionAppListener: any
+  rpcRefreshIntervalId = 0
 
-  componentDidMount() {
-    if (!this.rpc) {
-      this.rpc = new RPC(
-        this.setTotalBalance,
-        this.setAddressesWithBalances,
-        this.setTransactionList,
-        this.setAllAddresses,
-        this.setInfo,
-        this.setPslPrice,
-        this.setDisconnected,
-      )
-    } // Read the address book
+  async componentDidMount() {
+    const rpc = new RPC(
+      this.setTotalBalance,
+      this.setAddressesWithBalances,
+      this.setTransactionList,
+      this.setAllAddresses,
+      this.setInfo,
+      this.setPslPrice,
+      this.setDisconnected,
+    )
+    this.rpc = rpc
 
-    ;(async () => {
-      const addressBook = await AddressbookImpl.readAddressBook()
-
-      if (addressBook) {
-        this.setState({
-          addressBook,
-        })
+    // Auto refresh every 10s
+    this.rpcRefreshIntervalId = window.setInterval(() => {
+      if (this.state.rpcConfig.username) {
+        rpc.refresh()
       }
-    })() // Setup the websocket for the companion app
+    }, 10000)
+
+    const addressBook = await AddressbookImpl.readAddressBook()
+    if (addressBook) {
+      this.setState({ addressBook })
+    }
 
     this.companionAppListener = new CompanionAppListener(
       this.getFullState,
@@ -99,7 +127,9 @@ class RouteApp extends React.Component<any, any> {
     this.companionAppListener.setUp()
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    window.clearInterval(this.rpcRefreshIntervalId)
+  }
 
   getFullState = () => {
     return this.state
@@ -212,7 +242,7 @@ class RouteApp extends React.Component<any, any> {
       }
 
       const result = await this.rpc.doImportPrivKey(
-        keys[i],
+        PastelUtils.removeAllBreakChar(keys[i]),
         i === keys.length - 1,
       )
 
@@ -321,7 +351,7 @@ class RouteApp extends React.Component<any, any> {
       info: newInfo,
     })
   }
-  setInfo = (newInfo: any) => {
+  setInfo = (newInfo: TWalletInfo) => {
     // If the price is not set in this object, copy it over from the current object
     const { info } = this.state
 
@@ -356,7 +386,7 @@ class RouteApp extends React.Component<any, any> {
     if (type === 'generatePaperWallet') {
       this.props.openPastelPaperWalletModal({
         address,
-        privateKey: addressPrivateKeys?.[address],
+        privateKey: addressPrivateKeys[address],
       })
     } else {
       this.setState({
@@ -364,6 +394,10 @@ class RouteApp extends React.Component<any, any> {
       })
     }
   }
+  hidePrivKey = () => {
+    this.setState({ addressPrivateKeys: {} })
+  }
+
   fetchAndSetSingleViewKey = async (address: any) => {
     const key = await this.rpc.getViewKeyAsString(address)
     const addressViewKeys: any = {}
@@ -440,6 +474,7 @@ class RouteApp extends React.Component<any, any> {
       setSendTo: this.setSendTo,
       info,
     }
+
     return (
       <App>
         <ErrorModal
@@ -448,10 +483,14 @@ class RouteApp extends React.Component<any, any> {
           modalIsOpen={errorModalData.modalIsOpen}
           closeModal={this.closeErrorModal}
         />
+        <PastelPhotopeaModal />
+        <PastelSpriteEditorToolModal />
+        <AboutModal />
+        <SquooshToolModal />
 
         <div
           style={{
-            overflow: 'hidden',
+            height: '100%',
           }}
         >
           {info && info.version && (
@@ -464,7 +503,14 @@ class RouteApp extends React.Component<any, any> {
                 importANIPrivKeys={this.importANIPrivKeys}
                 addresses={addresses}
                 transactions={transactions}
+                openPastelSpriteEditorToolModal={
+                  this.props.openPastelSpriteEditorToolModal
+                }
                 {...(standardProps as any)}
+                openPastelPhotopeaModal={this.props.openPastelPhotopeaModal}
+                openAboutModal={this.props.openAboutModal}
+                openUpdateToast={this.props.openUpdateToast}
+                openSquooshToolModal={this.props.openSquooshToolModal}
               />
             </div>
           )}
@@ -494,8 +540,10 @@ class RouteApp extends React.Component<any, any> {
                     addressViewKeys={addressViewKeys}
                     receivePageState={receivePageState}
                     addressBook={addressBook}
+                    transactions={transactions}
                     {...standardProps}
                     fetchAndSetSinglePrivKey={this.fetchAndSetSinglePrivKey}
+                    hidePrivKey={this.hidePrivKey}
                     fetchAndSetSingleViewKey={this.fetchAndSetSingleViewKey}
                     createNewAddress={this.createNewAddress}
                   />
@@ -534,20 +582,28 @@ class RouteApp extends React.Component<any, any> {
                 )}
               />
 
+              <Route path={routes.CREATOR} render={() => <Creator />} />
+
+              <Route path={routes.COLLECTOR} render={() => <Collector />} />
+
+              <Route path={routes.NFT} render={() => <Nft />} />
+
               <Route
                 path={routes.PASTELD}
                 render={() => <Pasteld info={info} refresh={this.doRefresh} />}
               />
 
-              {/* <Route
+              <Route
                 path={routes.PASTEL_ID}
                 render={() => (
                   <PastelID
                     addressesWithBalance={addressesWithBalance}
                     createNewAddress={this.createNewAddress}
+                    totalBalance={totalBalance}
+                    info={info}
                   />
                 )}
-              /> */}
+              />
 
               <Route
                 path={routes.CONNECTMOBILE}
@@ -576,15 +632,25 @@ class RouteApp extends React.Component<any, any> {
 
               <Route
                 path={routes.LOADING}
-                render={() => (
+                render={props => (
                   <LoadingScreen
+                    {...props}
                     setRPCConfig={(rpcConfig: any) => {
                       // To support Redux calls
-                      this.props.setPastelConf(rpcConfig)
+                      this.props.setPastelConf({
+                        url: rpcConfig.url,
+                        username: rpcConfig.username,
+                        password: rpcConfig.password,
+                      })
 
                       // To support legacy calls
                       // TODO Remove then fully moved over to Redux
                       this.setRPCConfig(rpcConfig)
+
+                      // set pastel DB thread update timer
+                      setInterval(() => {
+                        PastelDBThread(rpcConfig)
+                      }, period)
                     }}
                     setInfo={this.setInfo}
                   />
@@ -598,6 +664,12 @@ class RouteApp extends React.Component<any, any> {
   }
 }
 
-export default connect(null, { setPastelConf, openPastelPaperWalletModal })(
-  RouteApp,
-)
+export default connect(null, {
+  setPastelConf,
+  openPastelPaperWalletModal,
+  openPastelPhotopeaModal,
+  openPastelSpriteEditorToolModal,
+  openAboutModal,
+  openSquooshToolModal,
+  openUpdateToast,
+})(RouteApp)

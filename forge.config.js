@@ -1,4 +1,5 @@
 const os = require('os')
+
 const package = require('./package.json')
 
 function getExtraResource() {
@@ -40,6 +41,13 @@ module.exports = {
     icon: getIcon(),
     asar: true,
     extraResource: getExtraResource(),
+    protocols: [
+      {
+        protocol: package.name,
+        name: package.name,
+        schemes: [package.protocolSchemes.native],
+      },
+    ],
   },
   makers: [
     {
@@ -81,7 +89,7 @@ module.exports = {
           entryPoints: [
             {
               html: './src/index.html',
-              js: './src/renderer.ts',
+              js: './src/renderer.tsx',
               name: 'main_window',
             },
           ],

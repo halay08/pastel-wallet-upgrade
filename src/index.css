@@ -8,6 +8,7 @@ html,
 body,
 #root {
   min-height: 100vh;
+  height: 100%;
 }
 
 body {
@@ -20,6 +21,7 @@ body {
 
 ::-webkit-scrollbar {
   width: 0.5em;
+  height: 0.5em;
 }
 
 ::-webkit-scrollbar-track {

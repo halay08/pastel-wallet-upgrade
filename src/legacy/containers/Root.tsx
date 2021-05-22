@@ -1,7 +1,8 @@
 import React from 'react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { ErrorModal as ReduxErrorModal } from '../../features/errorModal'
+import { PastelModal } from '../../features/pastelModal'
+import UpdateToast from '../../features/updateToast'
 import Routes from '../Routes'
 
 const Root = (): JSX.Element => (
@@ -9,7 +10,8 @@ const Root = (): JSX.Element => (
     <MemoryRouter>
       <Routes />
     </MemoryRouter>
-    <ReduxErrorModal />
+    <PastelModal />
+    <UpdateToast />
   </>
 )
 
