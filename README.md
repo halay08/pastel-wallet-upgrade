@@ -21,8 +21,8 @@ Additionally, if this is the first time you're running PastelWallet or a pasteld
 PastelWallet is written in Electron/Javascript and can be build from source.
 
 ```
-git clone https://github.com/pastelnetwork/pastel-electron-wallet.git
-cd pastel-electron-wallet
+git clone https://github.com/RivieraMedia/pastel-wallet-upgrade.git
+cd pastel-wallet-upgrade
 
 yarn install
 yarn make
@@ -43,4 +43,4 @@ To start in development mode, run
 yarn start
 ```
 
-To contribute to the source, please read [CONTRIBUTING.md](https://github.com/PastelNetwork/Pastel_Electron_Wallet/blob/master/docs/CONTRIBUTING.md).
+To contribute to the source, please read [CONTRIBUTING.md](https://github.com/RivieraMedia/pastel-wallet-upgrade/blob/master/docs/CONTRIBUTING.md).
