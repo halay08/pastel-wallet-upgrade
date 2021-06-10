@@ -331,6 +331,7 @@ class Sidebar extends PureComponent<any, any> {
       openAboutModal,
       openUpdateToast,
       openSquooshToolModal,
+      openGlitchImageModal,
     } = this.props
 
     ipcRenderer.on('payuri', (event, uri) => {
@@ -445,6 +446,10 @@ class Sidebar extends PureComponent<any, any> {
 
     ipcRenderer.on('squooshTool', () => {
       openSquooshToolModal()
+    })
+
+    ipcRenderer.on('glitchImage', () => {
+      openGlitchImageModal()
     })
 
     ipcRenderer.send('app-ready')
@@ -702,11 +707,29 @@ class Sidebar extends PureComponent<any, any> {
             currentRoute={location.pathname}
             iconname='fa-fingerprint'
           />
+          {/* <SidebarMenuItem
+            name='Statistics'
+            routeName={routes.STATISTICS}
+            currentRoute={location.pathname}
+            iconname='fa-chart-bar'
+          /> */}
           <SidebarMenuItem
             name='Expert Console'
             routeName={routes.EXPERT_CONSOLE}
             currentRoute={location.pathname}
             iconname='fa-file-code'
+          />
+          <SidebarMenuItem
+            name='Members'
+            routeName={routes.MEMBERS}
+            currentRoute={location.pathname}
+            iconname='fa-file-code'
+          />
+          <SidebarMenuItem
+            name='Market'
+            routeName={routes.MARKET}
+            currentRoute={location.pathname}
+            iconname='fa-shopping-cart'
           />
         </div>
 
