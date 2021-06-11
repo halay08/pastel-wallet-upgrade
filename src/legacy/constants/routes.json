@@ -1,6 +1,6 @@
 {
   "LOADING": "/",
-  "MEMBERS": "/members",
+  "FORUM": "/forum",
   "DASHBOARD": "/dashboard",
   "SEND": "/send",
   "RECEIVE": "/receive",

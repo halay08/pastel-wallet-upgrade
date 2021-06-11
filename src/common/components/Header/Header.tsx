@@ -1,15 +1,15 @@
-import React from 'react'
-import { NavLink, Link, useLocation } from 'react-router-dom'
-import routes from '../../../common/constants/routes.json'
-import Logo from '../../../common/assets/icons/ico-logo.svg'
-import addBtn from '../../../common/assets/icons/ico-add-btn.svg'
-import searchIcon from '../../../common/assets/icons/ico-search.svg'
-import QuestionTag from '../../../common/assets/icons/ico-question.svg'
-import BellIcon from '../../../common/assets/icons/ico-bell.svg'
-import MessageIcon from '../../../common/assets/icons/ico-msg.svg'
-import SettingIcon from '../../../common/assets/icons/ico-setting.svg'
-import UserIcon from '../../../common/assets/icons/ico-user.svg'
-import cn from 'classnames'
+import React from 'react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
+import routes from '../../../common/constants/routes.json';
+import Logo from '../../../common/assets/icons/ico-logo.svg';
+import addBtn from '../../../common/assets/icons/ico-add-btn.svg';
+import searchIcon from '../../../common/assets/icons/ico-search.svg';
+import QuestionTag from '../../../common/assets/icons/ico-question.svg';
+import BellIcon from '../../../common/assets/icons/ico-bell.svg';
+import MessageIcon from '../../../common/assets/icons/ico-msg.svg';
+import SettingIcon from '../../../common/assets/icons/ico-setting.svg';
+import UserIcon from '../../../common/assets/icons/ico-user.svg';
+import cn from 'classnames';
 
 const MenuItem = ({
   to,
@@ -17,16 +17,16 @@ const MenuItem = ({
   children,
   classes,
 }: {
-  to: string
-  exact?: boolean
-  children: React.ReactNode
-  classes?: string
+  to: string;
+  exact?: boolean;
+  children: React.ReactNode;
+  classes?: string;
 }) => {
-  const location = useLocation()
+  const location = useLocation();
   return (
     <NavLink
       to={to}
-      exact={exact}
+      exact={exact || false}
       className={cn(
         'font-medium text-navigation h-full flex items-center relative',
         classes,
@@ -38,8 +38,8 @@ const MenuItem = ({
         <div className='absolute bottom-m1.5px w-full h-3px bg-gray-33 rounded-full'></div>
       )}
     </NavLink>
-  )
-}
+  );
+};
 
 const SearchBar = () => {
   return (
@@ -55,15 +55,15 @@ const SearchBar = () => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
 type TIconProps = {
-  src: string
-  background?: boolean
-  notification?: boolean
-  classes?: string
-}
+  src: string;
+  background?: boolean;
+  notification?: boolean;
+  classes?: string;
+};
 
 const Icon = ({ src, background, notification, classes }: TIconProps) => {
   return (
@@ -81,8 +81,8 @@ const Icon = ({ src, background, notification, classes }: TIconProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default function Header(): JSX.Element {
   return (
@@ -141,5 +141,5 @@ export default function Header(): JSX.Element {
         <Icon classes='ml-6 lg:ml-22px' src={UserIcon} background />
       </div>
     </div>
-  )
+  );
 }

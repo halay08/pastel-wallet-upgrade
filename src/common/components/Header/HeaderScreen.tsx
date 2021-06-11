@@ -1,36 +1,36 @@
-import React from 'react'
-import { withRouter } from 'react-router'
-import { Link } from 'react-router-dom'
-import styles from './HeaderScreen.module.css'
-import routes from '../../constants/routes.json'
-import Logo from '../../assets/icons/ico-logo.svg'
-import addBtn from '../../assets/icons/ico-add-btn.svg'
-import searchIcon from '../../assets/icons/ico-search.svg'
-import QuestionTag from '../../assets/icons/ico-question.svg'
-import BellIcon from '../../assets/icons/ico-bell.svg'
-import MessageIcon from '../../assets/icons/ico-msg.svg'
-import SettingIcon from '../../assets/icons/ico-setting.svg'
-import UserIcon from '../../assets/icons/ico-user.svg'
-import cn from 'classnames'
+import React from 'react';
+import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
+import styles from './HeaderScreen.module.css';
+import routes from '../../constants/routes.json';
+import Logo from '../../assets/icons/ico-logo.svg';
+import addBtn from '../../assets/icons/ico-add-btn.svg';
+import searchIcon from '../../assets/icons/ico-search.svg';
+import QuestionTag from '../../assets/icons/ico-question.svg';
+import BellIcon from '../../assets/icons/ico-bell.svg';
+import MessageIcon from '../../assets/icons/ico-msg.svg';
+import SettingIcon from '../../assets/icons/ico-setting.svg';
+import UserIcon from '../../assets/icons/ico-user.svg';
+import cn from 'classnames';
 
 interface IMenuType {
-  name: string
-  routeName: string
-  currentRoute: string
-  style: string | undefined
+  name: string;
+  routeName: string;
+  currentRoute: string;
+  style: string | undefined;
 }
 
 const MenubarItem = ({ name, routeName, currentRoute, style }: IMenuType) => {
-  let isActive = false
+  let isActive = false;
 
   if (currentRoute.endsWith('app.html') || currentRoute === routeName) {
-    isActive = true
+    isActive = true;
   }
 
-  let activeColorClass = ''
+  let activeColorClass = '';
 
   if (isActive) {
-    activeColorClass = styles.headermainactive
+    activeColorClass = styles.headermainactive;
   }
 
   return (
@@ -52,11 +52,11 @@ const MenubarItem = ({ name, routeName, currentRoute, style }: IMenuType) => {
         <span className={activeColorClass}>{name}</span>
       </Link>
     </div>
-  )
-}
+  );
+};
 
 const SearhBar = () => {
-  const placeholder = 'Search creator or NFT'
+  const placeholder = 'Search creator or NFT';
   return (
     <div className='flex relative'>
       <img width='16' className={styles.searchIconPosition} src={searchIcon} />
@@ -65,19 +65,19 @@ const SearhBar = () => {
         placeholder={`${placeholder}`}
       />
     </div>
-  )
-}
+  );
+};
 
 interface Location {
-  pathname: string
+  pathname: string;
 }
 
 interface PropsType {
-  location: Location
+  location: Location;
 }
 
 const Header = (props: PropsType) => {
-  const { location } = props
+  const { location } = props;
   const icons = [
     {
       src: QuestionTag,
@@ -99,7 +99,7 @@ const Header = (props: PropsType) => {
       src: UserIcon,
       variant: 'background',
     },
-  ]
+  ];
 
   const menubar_items = [
     {
@@ -131,7 +131,12 @@ const Header = (props: PropsType) => {
       routeName: routes.ADDRESSBOOK,
       currentRoute: location.pathname,
     },
-  ]
+    {
+      name: 'Forum',
+      routeName: routes.FORUM,
+      currentRoute: location.pathname,
+    },
+  ];
   return (
     <div className='flex items-center h-66px bg-white justify-between md:text-h6 lg:text-15 xl:text-h5 font-display border-b border-gray-e6'>
       <div className='flex items-center'>
@@ -171,7 +176,7 @@ const Header = (props: PropsType) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default withRouter(Header)
+export default withRouter(Header);
