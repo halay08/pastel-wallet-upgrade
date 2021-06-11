@@ -24,13 +24,13 @@ const MenubarItem = ({ name, routeName, currentRoute, style }: TMenuType) => {
   let isActive = false
 
   if (currentRoute.endsWith('app.html') || currentRoute === routeName) {
-    isActive = true
+    isActive = true;
   }
 
-  let activeColorClass = ''
+  let activeColorClass = '';
 
   if (isActive) {
-    activeColorClass = styles.headermainactive
+    activeColorClass = styles.headermainactive;
   }
 
   return (
@@ -46,11 +46,11 @@ const MenubarItem = ({ name, routeName, currentRoute, style }: TMenuType) => {
         <span className={activeColorClass}>{name}</span>
       </Link>
     </div>
-  )
-}
+  );
+};
 
 const SearhBar = () => {
-  const placeholder = 'Search creator or NFT'
+  const placeholder = 'Search creator or NFT';
   return (
     <div className='flex relative'>
       <img width='16' className={styles.searchIconPosition} src={searchIcon} />
@@ -59,8 +59,8 @@ const SearhBar = () => {
         placeholder={`${placeholder}`}
       />
     </div>
-  )
-}
+  );
+};
 
 type TLocation = {
   pathname: string
@@ -96,7 +96,7 @@ const Header = (props: TPropsType) => {
       variant: 'background',
       func: () => history.push(routes.PROFILE),
     },
-  ]
+  ];
 
   const menubar_items = [
     {
@@ -128,7 +128,12 @@ const Header = (props: TPropsType) => {
       routeName: routes.ADDRESSBOOK,
       currentRoute: location.pathname,
     },
-  ]
+    {
+      name: 'Forum',
+      routeName: routes.FORUM,
+      currentRoute: location.pathname,
+    },
+  ];
   return (
     <div className='flex items-center h-66px bg-white justify-between md:text-h6 lg:text-15 xl:text-h5 font-display border-b border-gray-e6'>
       <div className='flex items-center'>
@@ -172,7 +177,7 @@ const Header = (props: TPropsType) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default withRouter(Header)
+export default withRouter(Header);

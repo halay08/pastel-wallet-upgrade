@@ -1,40 +1,40 @@
-import React from 'react'
-import Downshift from 'downshift'
-import caretDownIcon from '../../../common/assets/icons/ico-caret-down.svg'
-import cn from 'classnames'
-import { parseFormattedNumber } from '../../utils/format'
-import { useSelectOptions } from './select.utils'
+import React from 'react';
+import Downshift from 'downshift';
+import caretDownIcon from '../../../common/assets/icons/ico-caret-down.svg';
+import cn from 'classnames';
+import { parseFormattedNumber } from '../../utils/format';
+import { useSelectOptions } from './select.utils';
 
 export type TOption = {
-  label: string
-  value: string
-}
+  label: string;
+  value: string;
+};
 
 export type TBaseProps = {
-  placeholder?: string
-  className?: string
-  label?: string
-  autocomplete?: boolean
-}
+  placeholder?: string;
+  className?: string;
+  label?: string;
+  autocomplete?: boolean;
+};
 
 export type TOptionsProps = TBaseProps & {
-  options: TOption[]
-  onChange: (option: TOption | null) => void
-  selected?: TOption | null
-}
+  options: TOption[];
+  onChange: (option: TOption | null) => void;
+  selected?: TOption | null;
+};
 
 export type TRangeProps = TBaseProps & {
-  min: number
-  max: number
-  step: number
-  onChange: (value: number | null) => void
-  value: number | null
-}
+  min: number;
+  max: number;
+  step: number;
+  onChange: (value: number | null) => void;
+  value: number | null;
+};
 
-export type TSelectProps = TOptionsProps | TRangeProps
+export type TSelectProps = TOptionsProps | TRangeProps;
 
 export default function Select(props: TSelectProps): JSX.Element {
-  const { placeholder, className, label, autocomplete = false } = props
+  const { placeholder, className, label, autocomplete = false } = props;
 
   const {
     options,
@@ -42,13 +42,13 @@ export default function Select(props: TSelectProps): JSX.Element {
     onChange,
     onInputValueChange,
     inputValueRef,
-  } = useSelectOptions(props)
+  } = useSelectOptions(props);
 
-  let autoCompleteColor: string
+  let autoCompleteColor: string;
   if ('options' in props) {
-    autoCompleteColor = props.label ? 'text-gray-2d' : 'text-gray-71'
+    autoCompleteColor = props.label ? 'text-gray-2d' : 'text-gray-71';
   } else {
-    autoCompleteColor = 'text-gray-35'
+    autoCompleteColor = 'text-gray-35';
   }
 
   return (
@@ -56,7 +56,7 @@ export default function Select(props: TSelectProps): JSX.Element {
       selectedItem={selected}
       onChange={onChange}
       itemToString={item => (item ? item.value : '')}
-      onInputValueChange={onInputValueChange}
+      onInputValueChange={onInputValueChange as any}
     >
       {({
         getItemProps,
@@ -71,12 +71,12 @@ export default function Select(props: TSelectProps): JSX.Element {
         const value =
           autocomplete &&
           inputValue &&
-          parseFormattedNumber(inputValue).toString()
+          parseFormattedNumber(inputValue).toString();
         const filteredOptions = isOpen
           ? value
             ? options.filter(option => option.value.startsWith(value))
             : options
-          : undefined
+          : undefined;
 
         return (
           <div
@@ -120,7 +120,7 @@ export default function Select(props: TSelectProps): JSX.Element {
             >
               {filteredOptions?.map((item, index) => {
                 const highlight =
-                  selectedItem === item || highlightedIndex === index
+                  selectedItem === item || highlightedIndex === index;
 
                 return (
                   <li
@@ -136,12 +136,12 @@ export default function Select(props: TSelectProps): JSX.Element {
                   >
                     {item.label}
                   </li>
-                )
+                );
               })}
             </ul>
           </div>
-        )
+        );
       }}
     </Downshift>
-  )
+  );
 }

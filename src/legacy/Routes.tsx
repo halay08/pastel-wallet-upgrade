@@ -19,29 +19,33 @@ import {
   Info,
   ReceivePageState,
   AddressBookEntry,
-} from './components/AppState'
-import RPC from './rpc'
-import Utils from './utils/utils'
-import Pasteld from './components/Pasteld'
-import AddressBook from './components/Addressbook'
-import AddressbookImpl from './utils/AddressbookImpl'
-import Transactions from './components/Transactions'
-import CompanionAppListener from './companion'
-import { PastelID } from '../features/pastelID'
-import WormholeConnection from './components/WormholeConnection'
-import { connect } from 'react-redux'
-import { setPastelConf } from '../features/pastelConf'
-import { PastelDBThread } from '../features/pastelDB'
-import { openPastelPaperWalletModal } from '../features/pastelPaperWalletGenerator'
+} from './components/AppState';
+import RPC from './rpc';
+import Utils from './utils/utils';
+import Pasteld from './components/Pasteld';
+import AddressBook from './components/Addressbook';
+import AddressbookImpl from './utils/AddressbookImpl';
+import Transactions from './components/Transactions';
+import CompanionAppListener from './companion';
+import { PastelID } from '../features/pastelID';
+import WormholeConnection from './components/WormholeConnection';
+import { connect } from 'react-redux';
+import { setPastelConf } from '../features/pastelConf';
+import { PastelDBThread } from '../features/pastelDB';
+import { openPastelPaperWalletModal } from '../features/pastelPaperWalletGenerator';
 import PastelSpriteEditorToolModal, {
   openPastelSpriteEditorToolModal,
-} from '../features/pastelSpriteEditorTool'
+} from '../features/pastelSpriteEditorTool';
 import PastelPhotopeaModal, {
   openPastelPhotopeaModal,
-} from '../features/pastelPhotopea'
-import AboutModal, { openAboutModal } from '../features/about'
-import SquooshToolModal, { openSquooshToolModal } from '../features/squooshTool'
-import GlitchImageModal, { openGlitchImageModal } from '../features/glitchImage'
+} from '../features/pastelPhotopea';
+import AboutModal, { openAboutModal } from '../features/about';
+import SquooshToolModal, {
+  openSquooshToolModal,
+} from '../features/squooshTool';
+import GlitchImageModal, {
+  openGlitchImageModal,
+} from '../features/glitchImage';
 // @ts-ignore
 import ExpertConsole from '../features/expertConsole'
 import PastelStatistics from '../features/pastelStatistics'
@@ -54,24 +58,25 @@ import Profile from '../features/profile'
 import NFTMarketFeed from '../features/nftMarket'
 import { app } from 'electron'
 import { MembersDirectory } from '../features/members'
+import { Forum } from '../features'
 
 export type TWalletInfo = {
-  connections: number
-  currencyName: string
-  disconnected: boolean
-  latestBlock: number
-  pslPrice: number | undefined
-  solps: number
-  testnet: boolean
-  verificationProgress: number
-  version: number
-}
+  connections: number;
+  currencyName: string;
+  disconnected: boolean;
+  latestBlock: number;
+  pslPrice: number | undefined;
+  solps: number;
+  testnet: boolean;
+  verificationProgress: number;
+  version: number;
+};
 
-const period = 1000 * 10
+const period = 1000 * 10;
 
 class RouteApp extends React.Component<any, any> {
   constructor(props: any) {
-    super(props)
+    super(props);
     this.state = {
       totalBalance: new TotalBalance(),
       addressesWithBalance: [],
@@ -88,16 +93,16 @@ class RouteApp extends React.Component<any, any> {
       errorModalData: new ErrorModalData(),
       connectedCompanionApp: null,
       pastelIDs: [],
-    } // Create the initial ToAddr box
+    }; // Create the initial ToAddr box
 
-    this.state.sendPageState.toaddrs = [new ToAddr(Utils.getNextToAddrID())] // Set the Modal's app element
+    this.state.sendPageState.toaddrs = [new ToAddr(Utils.getNextToAddrID())]; // Set the Modal's app element
 
-    ReactModal.setAppElement('#root')
+    ReactModal.setAppElement('#root');
   }
 
-  rpc: any
-  companionAppListener: any
-  rpcRefreshIntervalId = 0
+  rpc: any;
+  companionAppListener: any;
+  rpcRefreshIntervalId = 0;
 
   async componentDidMount() {
     const rpc = new RPC(
@@ -108,65 +113,65 @@ class RouteApp extends React.Component<any, any> {
       this.setInfo,
       this.setPslPrice,
       this.setDisconnected,
-    )
-    this.rpc = rpc
+    );
+    this.rpc = rpc;
 
     // Auto refresh every 10s
     if (!app?.isPackaged) {
       this.rpcRefreshIntervalId = window.setInterval(() => {
         if (this.state.rpcConfig.username) {
-          rpc.refresh()
+          rpc.refresh();
         }
-      }, 10000)
+      }, 10000);
     }
 
-    const addressBook = await AddressbookImpl.readAddressBook()
+    const addressBook = await AddressbookImpl.readAddressBook();
     if (addressBook) {
-      this.setState({ addressBook })
+      this.setState({ addressBook });
     }
 
     this.companionAppListener = new CompanionAppListener(
       this.getFullState,
       this.sendTransaction,
       this.updateConnectedCompanionApp,
-    )
-    this.companionAppListener.setUp()
+    );
+    this.companionAppListener.setUp();
   }
 
   componentWillUnmount() {
-    window.clearInterval(this.rpcRefreshIntervalId)
+    window.clearInterval(this.rpcRefreshIntervalId);
   }
 
   getFullState = () => {
-    return this.state
-  }
+    return this.state;
+  };
   openErrorModal = (title: any, body: any) => {
-    const errorModalData: any = new ErrorModalData()
-    errorModalData.modalIsOpen = true
-    errorModalData.title = title
-    errorModalData.body = body
+    const errorModalData: any = new ErrorModalData();
+    errorModalData.modalIsOpen = true;
+    errorModalData.title = title;
+    errorModalData.body = body;
     this.setState({
       errorModalData,
-    })
-  }
+    });
+  };
   closeErrorModal = () => {
-    const errorModalData = new ErrorModalData()
-    errorModalData.modalIsOpen = false
+    const errorModalData = new ErrorModalData();
+    errorModalData.modalIsOpen = false;
     this.setState({
       errorModalData,
-    })
-  } // Set the state of the current info object to be disconnected
+    });
+  }; // Set the state of the current info object to be disconnected
 
   setDisconnected = (err: any) => {
-    const { info } = this.state
-    const newInfo: any = new Info()
-    Object.assign(newInfo, info)
-    newInfo.disconnected = true
+    const { info } = this.state;
+    const newInfo: any = new Info();
+    Object.assign(newInfo, info);
+    newInfo.disconnected = true;
     this.setState({
       info: newInfo,
-    })
-    this.openErrorModal('Disconnected', err)
-  }
+    });
+    this.openErrorModal('Disconnected', err);
+  };
 
   // TODO duplicated with below, discovered by TypeScript
   // setInfo = (info: any) => {
@@ -178,13 +183,13 @@ class RouteApp extends React.Component<any, any> {
   setTotalBalance = (totalBalance: any) => {
     this.setState({
       totalBalance,
-    })
-  }
+    });
+  };
   setAddressesWithBalances = (addressesWithBalance: any) => {
     this.setState({
       addressesWithBalance,
-    })
-    const { sendPageState } = this.state // If there is no 'from' address, we'll set a default one
+    });
+    const { sendPageState } = this.state; // If there is no 'from' address, we'll set a default one
 
     if (!sendPageState.fromaddr) {
       // Find a z-address with the highest balance
@@ -193,43 +198,43 @@ class RouteApp extends React.Component<any, any> {
         .reduce((prev: any, ab: any) => {
           // We'll start with a sapling address
           if (prev == null) {
-            return ab
+            return ab;
           } // Find the sapling address with the highest balance
 
           if (prev.balance < ab.balance) {
-            return ab
+            return ab;
           }
 
-          return prev
-        }, null)
+          return prev;
+        }, null);
 
       if (defaultAB) {
-        const newSendPageState = new SendPageState()
-        newSendPageState.fromaddr = defaultAB.address
-        newSendPageState.toaddrs = sendPageState.toaddrs
+        const newSendPageState = new SendPageState();
+        newSendPageState.fromaddr = defaultAB.address;
+        newSendPageState.toaddrs = sendPageState.toaddrs;
         this.setState({
           sendPageState: newSendPageState,
-        })
+        });
       }
     }
-  }
+  };
   setTransactionList = (transactions: any) => {
     this.setState({
       transactions,
-    })
-  }
+    });
+  };
   setAllAddresses = (addresses: any) => {
     this.setState({
       addresses,
-    })
-  }
+    });
+  };
   setSendPageState = (sendPageState: any) => {
     this.setState({
       sendPageState,
-    })
-  }
+    });
+  };
   importPrivKeys = async (keys: any) => {
-    console.log(keys)
+    console.log(keys);
 
     for (let i = 0; i < keys.length; i++) {
       // The last doImport will take forever, because it will trigger the rescan. So, show
@@ -244,13 +249,13 @@ class RouteApp extends React.Component<any, any> {
             <br />
             Please be patient!
           </span>,
-        )
+        );
       }
 
       const result = await this.rpc.doImportPrivKey(
         PastelUtils.removeAllBreakChar(keys[i]),
         i === keys.length - 1,
-      )
+      );
 
       if (result !== '') {
         this.openErrorModal(
@@ -262,13 +267,13 @@ class RouteApp extends React.Component<any, any> {
             <br />
             {result}
           </span>,
-        )
-        return
+        );
+        return;
       }
     }
-  }
+  };
   importANIPrivKeys = async (keys: any) => {
-    console.log(keys)
+    console.log(keys);
 
     for (let i = 0; i < keys.length; i++) {
       // The last doImport will take forever, because it will trigger the rescan. So, show
@@ -283,13 +288,13 @@ class RouteApp extends React.Component<any, any> {
             <br />
             Please be patient!
           </span>,
-        )
+        );
       }
 
       const result = await this.rpc.doImportANIPrivKey(
         keys[i],
         i === keys.length - 1,
-      )
+      );
 
       if (result !== '') {
         this.openErrorModal(
@@ -301,162 +306,162 @@ class RouteApp extends React.Component<any, any> {
             <br /> Copy this key and paste it into the &quot;Import Private
             Keys...&quot; menu item. <br />
           </span>,
-        )
-        return
+        );
+        return;
       }
     }
-  }
+  };
   setSendTo = (targets: any) => {
     // Clear the existing send page state and set up the new one
-    const { sendPageState } = this.state
-    const newSendPageState = new SendPageState()
-    newSendPageState.toaddrs = []
-    newSendPageState.fromaddr = sendPageState.fromaddr // If a single object is passed, accept that as well.
+    const { sendPageState } = this.state;
+    const newSendPageState = new SendPageState();
+    newSendPageState.toaddrs = [];
+    newSendPageState.fromaddr = sendPageState.fromaddr; // If a single object is passed, accept that as well.
 
-    let tgts = targets
+    let tgts = targets;
 
     if (!Array.isArray(tgts)) {
-      tgts = [targets]
+      tgts = [targets];
     }
 
     tgts.forEach((tgt: any) => {
-      const to = new ToAddr(Utils.getNextToAddrID())
+      const to = new ToAddr(Utils.getNextToAddrID());
 
       if (tgt.address) {
-        to.to = tgt.address
+        to.to = tgt.address;
       }
 
       if (tgt.amount) {
-        to.amount = tgt.amount
+        to.amount = tgt.amount;
       }
 
       if (tgt.memoString) {
-        to.memo = tgt.memoString
+        to.memo = tgt.memoString;
       }
 
-      newSendPageState.toaddrs.push(to)
-    })
+      newSendPageState.toaddrs.push(to);
+    });
     this.setState({
       sendPageState: newSendPageState,
-    })
-  }
+    });
+  };
   setRPCConfig = (rpcConfig: any) => {
     this.setState({
       rpcConfig,
-    })
-    console.log(rpcConfig)
-    this.rpc.configure(rpcConfig)
-  }
+    });
+    console.log(rpcConfig);
+    this.rpc.configure(rpcConfig);
+  };
   setPslPrice = (price: any) => {
-    console.log(`Price = ${price}`)
-    const { info } = this.state
-    const newInfo: any = new Info()
-    Object.assign(newInfo, info)
-    newInfo.pslPrice = price
+    console.log(`Price = ${price}`);
+    const { info } = this.state;
+    const newInfo: any = new Info();
+    Object.assign(newInfo, info);
+    newInfo.pslPrice = price;
     this.setState({
       info: newInfo,
-    })
-  }
+    });
+  };
   setInfo = (newInfo: TWalletInfo) => {
     // If the price is not set in this object, copy it over from the current object
-    const { info } = this.state
+    const { info } = this.state;
 
     if (!newInfo.pslPrice) {
-      newInfo.pslPrice = info.pslPrice
+      newInfo.pslPrice = info.pslPrice;
     }
 
     this.setState({
       info: newInfo,
-    })
-  }
+    });
+  };
   sendTransaction = async (sendJson: any, fnOpenSendErrorModal: any) => {
     try {
       const success = await this.rpc.sendTransaction(
         sendJson,
         fnOpenSendErrorModal,
-      )
-      return success
+      );
+      return success;
     } catch (err) {
-      console.log('route sendtx error', err)
+      console.log('route sendtx error', err);
     }
-  } // Get a single private key for this address, and return it as a string.
+  }; // Get a single private key for this address, and return it as a string.
 
   getPrivKeyAsString = async (address: any) => {
-    return this.rpc.getPrivKeyAsString(address)
-  } // Getter methods, which are called by the components to update the state
+    return this.rpc.getPrivKeyAsString(address);
+  }; // Getter methods, which are called by the components to update the state
 
   fetchAndSetSinglePrivKey = async (address: any, type: string = '') => {
-    const key = await this.rpc.getPrivKeyAsString(address)
-    const addressPrivateKeys: any = {}
-    addressPrivateKeys[address] = key
+    const key = await this.rpc.getPrivKeyAsString(address);
+    const addressPrivateKeys: any = {};
+    addressPrivateKeys[address] = key;
     if (type === 'generatePaperWallet') {
       this.props.openPastelPaperWalletModal({
         address,
         privateKey: addressPrivateKeys[address],
-      })
+      });
     } else {
       this.setState({
         addressPrivateKeys,
-      })
+      });
     }
-  }
+  };
   hidePrivKey = () => {
-    this.setState({ addressPrivateKeys: {} })
-  }
+    this.setState({ addressPrivateKeys: {} });
+  };
 
   fetchAndSetSingleViewKey = async (address: any) => {
-    const key = await this.rpc.getViewKeyAsString(address)
-    const addressViewKeys: any = {}
-    addressViewKeys[address] = key
+    const key = await this.rpc.getViewKeyAsString(address);
+    const addressViewKeys: any = {};
+    addressViewKeys[address] = key;
     this.setState({
       addressViewKeys,
-    })
-  }
+    });
+  };
   addAddressBookEntry = (label: any, address: any) => {
     // Add an entry into the address book
-    const { addressBook } = this.state
+    const { addressBook } = this.state;
     const newAddressBook = addressBook.concat(
       new AddressBookEntry(label, address),
-    ) // Write to disk. This method is async
+    ); // Write to disk. This method is async
 
-    AddressbookImpl.writeAddressBook(newAddressBook)
+    AddressbookImpl.writeAddressBook(newAddressBook);
     this.setState({
       addressBook: newAddressBook,
-    })
-  }
+    });
+  };
   removeAddressBookEntry = (label: any) => {
-    const { addressBook } = this.state
-    const newAddressBook = addressBook.filter((i: any) => i.label !== label) // Write to disk. This method is async
+    const { addressBook } = this.state;
+    const newAddressBook = addressBook.filter((i: any) => i.label !== label); // Write to disk. This method is async
 
-    AddressbookImpl.writeAddressBook(newAddressBook)
+    AddressbookImpl.writeAddressBook(newAddressBook);
     this.setState({
       addressBook: newAddressBook,
-    })
-  }
+    });
+  };
   createNewAddress = async (zaddress: any) => {
     // Create a new address
-    const newaddress = await this.rpc.createNewAddress(zaddress)
-    console.log(`Created new Address ${newaddress}`) // And then fetch the list of addresses again to refresh
+    const newaddress = await this.rpc.createNewAddress(zaddress);
+    console.log(`Created new Address ${newaddress}`); // And then fetch the list of addresses again to refresh
 
-    this.rpc.fetchAllAddresses()
-    const { receivePageState } = this.state
-    const newRerenderKey = receivePageState.rerenderKey + 1
-    const newReceivePageState = new ReceivePageState()
-    newReceivePageState.newAddress = newaddress
-    newReceivePageState.rerenderKey = newRerenderKey
+    this.rpc.fetchAllAddresses();
+    const { receivePageState } = this.state;
+    const newRerenderKey = receivePageState.rerenderKey + 1;
+    const newReceivePageState = new ReceivePageState();
+    newReceivePageState.newAddress = newaddress;
+    newReceivePageState.rerenderKey = newRerenderKey;
     this.setState({
       receivePageState: newReceivePageState,
-    })
-    return newaddress
-  }
+    });
+    return newaddress;
+  };
   updateConnectedCompanionApp = (connectedCompanionApp: any) => {
     this.setState({
       connectedCompanionApp,
-    })
-  }
+    });
+  };
   doRefresh = () => {
-    this.rpc.refresh()
-  }
+    this.rpc.refresh();
+  };
 
   render() {
     const {
@@ -473,13 +478,13 @@ class RouteApp extends React.Component<any, any> {
       errorModalData,
       connectedCompanionApp,
       pastelIDs,
-    } = this.state
+    } = this.state;
     const standardProps = {
       openErrorModal: this.openErrorModal,
       closeErrorModal: this.closeErrorModal,
       setSendTo: this.setSendTo,
       info,
-    }
+    };
 
     return (
       <div className='flex flex-col h-full'>
@@ -494,7 +499,7 @@ class RouteApp extends React.Component<any, any> {
         <AboutModal />
         <SquooshToolModal />
         <GlitchImageModal />
-        {info?.version && <Header />}
+        {(info?.version || 1) && <Header />}
         <div className='flex-grow overflow-auto'>
           <Switch>
             <Route path={routes.MARKET} render={() => <NFTMarketFeed />} />
@@ -548,6 +553,7 @@ class RouteApp extends React.Component<any, any> {
             <Route path={routes.NFT} render={() => <Nft />} />
 
             <Route path={routes.MEMBERS} render={() => <MembersDirectory />} />
+            <Route path={routes.FORUM} render={() => <Forum />} />
             <Route
               path={routes.MEMBERS_PROFILE}
               render={() => <MemberProfile />}
@@ -606,17 +612,17 @@ class RouteApp extends React.Component<any, any> {
                       url: rpcConfig.url,
                       username: rpcConfig.username,
                       password: rpcConfig.password,
-                    })
+                    });
 
                     // To support legacy calls
                     // TODO Remove then fully moved over to Redux
-                    this.setRPCConfig(rpcConfig)
+                    this.setRPCConfig(rpcConfig);
 
                     // set pastel DB thread update timer
                     if (!app?.isPackaged) {
                       setInterval(() => {
-                        PastelDBThread(rpcConfig)
-                      }, period)
+                        PastelDBThread(rpcConfig);
+                      }, period);
                     }
                   }}
                   setInfo={this.setInfo}
@@ -626,7 +632,7 @@ class RouteApp extends React.Component<any, any> {
           </Switch>
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -639,4 +645,4 @@ export default connect(null, {
   openSquooshToolModal,
   openUpdateToast,
   openGlitchImageModal,
-})(RouteApp)
+})(RouteApp);

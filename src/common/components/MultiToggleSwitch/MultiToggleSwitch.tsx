@@ -3,31 +3,32 @@ import React from 'react'
 export type TMultiToggleDataItem = {
   label: string
   count?: number
-}
+};
 
 export type TMultiToggle = {
   data: TMultiToggleDataItem[]
   activeIndex: number
+  rounded?: boolean
+  border?: boolean
   containerClassName?: string
   itemInactiveClassName?: string
   itemActiveClassName?: string
   countInactiveClassName?: string
   countActiveClassName?: string
   onToggle: (index: number) => void
-}
+};
 
-const MultiToggleSwitch = (props: TMultiToggle): JSX.Element => {
-  const {
-    data,
-    activeIndex,
-    containerClassName,
-    itemInactiveClassName,
-    itemActiveClassName,
-    countInactiveClassName,
-    countActiveClassName,
-    onToggle,
-  } = props
-  const container_className = `inline-flex gap-3 p-3px rounded-full border border-navigation-default ${containerClassName}`
+const MultiToggleSwitch: React.FC<TMultiToggle> = ({
+  data,
+  activeIndex,
+  containerClassName,
+  itemInactiveClassName,
+  itemActiveClassName,
+  countInactiveClassName,
+  countActiveClassName,
+  onToggle,
+}) => {
+  const className = `inline-flex gap-3 p-3px rounded-full border border-navigation-default ${containerClassName}`
 
   const getItemClassName = (isActive: boolean) => {
     const activeClass = itemActiveClassName
@@ -62,8 +63,8 @@ const MultiToggleSwitch = (props: TMultiToggle): JSX.Element => {
   return (
     <>
       {data?.length && (
-        <div className={container_className}>
-          {data.map((item: TMultiToggleDataItem, index: number) => {
+        <div className={className}>
+          {data?.map((item: TMultiToggleDataItem, index: number) => {
             return (
               <div
                 className={getItemClassName(index === activeIndex)}

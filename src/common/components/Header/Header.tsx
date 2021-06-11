@@ -17,16 +17,16 @@ const MenuItem = ({
   children,
   classes,
 }: {
-  to: string
-  exact?: boolean
-  children: React.ReactNode
-  classes?: string
+  to: string;
+  exact?: boolean;
+  children: React.ReactNode;
+  classes?: string;
 }) => {
-  const location = useLocation()
+  const location = useLocation();
   return (
     <NavLink
       to={to}
-      exact={exact}
+      exact={exact || false}
       className={cn(
         'font-medium text-navigation h-full flex items-center relative',
         classes,
@@ -38,8 +38,8 @@ const MenuItem = ({
         <div className='absolute bottom-m1.5px w-full h-3px bg-gray-33 rounded-full'></div>
       )}
     </NavLink>
-  )
-}
+  );
+};
 
 const SearchBar = () => {
   return (
@@ -55,8 +55,8 @@ const SearchBar = () => {
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
 type TIconProps = {
   src: string
@@ -88,8 +88,8 @@ const Icon = ({ src, background, notification, classes, path }: TIconProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default function Header(): JSX.Element {
   return (
@@ -153,5 +153,5 @@ export default function Header(): JSX.Element {
         />
       </div>
     </div>
-  )
+  );
 }
