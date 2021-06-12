@@ -90,7 +90,7 @@ export const Forum: React.FC = () => {
   const table = {
     columns: columns,
     data: data,
-    headerTrClasses: 'h-12 text-gray-4a font-extrabold sticky',
+    headerTrClasses: 'h-12 text-gray-4a font-extrabold',
     headerTdClasses: 'first:pl-6 last:pr-6 border-b-1px border-line-default border-solid z-10',
     bodyTrClasses: 'h-12 hover:bg-line-default text-gray-2d',
     bodyTdClasses: 'first:rounded-l first:pl-6 last:pr-6 last:rounded-r border-b-1px border-line-default border-solid',
@@ -98,33 +98,24 @@ export const Forum: React.FC = () => {
   }
 
   return (
-    <>
-      <PageHeader title='Market' />
-      <ScrollBar hasPageHeader={true}>
-        <div className='wrapper content with-page-header pb-5 w-screen'>
-          {/* Filters */}
-          <div className='flex justify-between pb-6'>
-            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3.5'>
-              {filterOptions.map(option => (
-                <Select {...option} key={option.label} />
-              ))}
-            </div>
-            <div className='flex'>
-              <div className='flex h-full items-center justify-end'>
-                <MultiToggleSwitch
-                  containerClassName="rounded-none border-none"
-                  {...routes}
-                />
-              </div>
-            </div>
-          </div>
-          <div className='bg-white px-7 py-5 rounded-lg'>
-            <div className='space-y-5'>
-              <Table {...table} />
-            </div>
+    <div className='wrapper content with-page-header pb-5 w-screen'>
+      <div className='flex justify-between pt-5'>
+        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3.5'>
+          {filterOptions.map((option) => (
+            <Select {...option} key={option.label} />
+          ))}
+        </div>
+        <div className='flex'>
+          <div className='flex h-full items-center justify-end'>
+            <MultiToggleSwitch containerClassName='rounded-none border-none' {...routes} />
           </div>
         </div>
+      </div>
+      <ScrollBar hasPageHeader={true}>
+        <div className='bg-white px-7 py-5 rounded-lg'>
+          <Table {...table} />
+        </div>
       </ScrollBar>
-    </>
+    </div>
   )
 }
