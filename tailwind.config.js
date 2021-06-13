@@ -160,6 +160,7 @@ module.exports = {
         red: {
           '7a': '#FF7A00',
           ef: '#FFEFEB',
+          '75': '#FF754C',
         },
         orange: {
           63: '#FE634C',
@@ -237,6 +238,8 @@ module.exports = {
         '4px': '0.25rem',
       },
       borderWidth: {
+        '1px': '0.0625rem',
+        '3px': '0.1875rem',
         '5px': '0.3125rem',
       },
       lineHeight: {
@@ -244,9 +247,6 @@ module.exports = {
       },
       container: {
         center: true,
-      },
-      borderWidth: {
-        '3px': '0.1875rem',
       },
       maxHeight: {
         '244px': '15.25rem',
@@ -274,6 +274,8 @@ module.exports = {
   variants: {
     extend: {
       contrast: ['hover', 'focus'],
+      padding: ['first', 'last'],
+      borderRadius: ['first', 'last'],
     },
   },
   plugins: [],
