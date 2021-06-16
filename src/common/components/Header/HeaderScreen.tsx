@@ -52,10 +52,10 @@ const MenubarItem = ({ name, routeName, currentRoute, style }: TMenuType) => {
 const SearhBar = () => {
   const placeholder = 'Search creator or NFT';
   return (
-    <div className='flex relative'>
-      <img width='16' className={styles.searchIconPosition} src={searchIcon} />
+    <div className="flex relative">
+      <img width="16" className={styles.searchIconPosition} src={searchIcon} />
       <input
-        className=' placeholder-gray-b0 h-41px bg-gray-110 rounded-full pl-46px md:w-300px lg:w-300px xl:w-352px'
+        className=" placeholder-gray-b0 h-41px bg-gray-110 rounded-full pl-46px md:w-300px lg:w-300px xl:w-352px"
         placeholder={`${placeholder}`}
       />
     </div>
@@ -135,12 +135,12 @@ const Header = (props: TPropsType) => {
     },
   ];
   return (
-    <div className='flex items-center h-66px bg-white justify-between md:text-h6 lg:text-15 xl:text-h5 font-display border-b border-gray-e6'>
-      <div className='flex items-center'>
-        <div className='ml-20px md:ml-30px lg:ml-50px xl:ml-60px mr-13px md:mr-20px lg:mr-30px xl:mr-40px w-30px md:w-36px h-30px md:h-36px'>
-          <img src={Logo} alt='logo' />
+    <div className="flex items-center h-66px bg-white justify-between md:text-h6 lg:text-15 xl:text-h5 font-display border-b border-gray-e6">
+      <div className="flex items-center">
+        <div className="ml-20px md:ml-30px lg:ml-50px xl:ml-60px mr-13px md:mr-20px lg:mr-30px xl:mr-40px w-30px md:w-36px h-30px md:h-36px">
+          <img src={Logo} alt="logo" />
         </div>
-        <div className='flex'>
+        <div className="flex">
           {menubar_items.map((item, index) => (
             <MenubarItem
               key={index}
@@ -150,22 +150,18 @@ const Header = (props: TPropsType) => {
               style={item.style}
             />
           ))}
-          <div className='md:ml-13px lg:ml-40px xl:ml-50px'>
-            <Link to='#' className='flex items-center'>
-              <img
-                src={addBtn}
-                className='w-20px h-20px mr-2px md:mr-2'
-                alt='add button'
-              ></img>
-              <span className='text-blue-3f whitespace-nowrap'>new NFT</span>
+          <div className="md:ml-13px lg:ml-40px xl:ml-50px">
+            <Link to="#" className="flex items-center">
+              <img src={addBtn} className="w-20px h-20px mr-2px md:mr-2" alt="add button"></img>
+              <span className="text-blue-3f whitespace-nowrap">new NFT</span>
             </Link>
           </div>
         </div>
-        <div className='ml-20px md:ml-40px lg:ml-50px xl:ml-68px md:mr-8px lg:mr-8px xl:mr-8px'>
+        <div className="ml-20px md:ml-40px lg:ml-50px xl:ml-68px md:mr-8px lg:mr-8px xl:mr-8px">
           <SearhBar />
         </div>
       </div>
-      <div className='flex items-center mr-33px'>
+      <div className="flex items-center mr-33px">
         {icons.map((icon, index) => (
           <div className='mr-20px md:mr-26px' key={index}>
             <img

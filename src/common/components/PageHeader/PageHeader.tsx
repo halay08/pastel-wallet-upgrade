@@ -2,18 +2,18 @@ import React from 'react';
 import Select, { TOption } from '../Select/Select';
 import MultiToggleSwitch, { TMultiToggle } from '../MultiToggleSwitch';
 
-export type PageHeaderSortByOptions = {
+export type TPageHeaderSortByOptions = {
   placeholder: string;
   onOptionChange: (option: TOption | null) => void;
   selected: TOption | null;
   options: TOption[];
 };
 
-export interface PageHeaderProps {
+export interface IPageHeaderProps {
   showTitle?: boolean;
   title: string;
   routes?: TMultiToggle;
-  sortByOptions?: PageHeaderSortByOptions[];
+  sortByOptions?: TPageHeaderSortByOptions[];
 }
 
 /**
@@ -25,7 +25,7 @@ const PageHeader = ({
   title,
   routes,
   sortByOptions,
-}: PageHeaderProps): JSX.Element => {
+}: IPageHeaderProps): JSX.Element => {
   return (
     <div className='bg-white text-gray-1a'>
       <div className='wrapper py-30px'>

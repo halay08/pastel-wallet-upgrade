@@ -22,12 +22,12 @@ const StarRate = ({ rate, maxRate = DEFAULT_MAX_RATE }: TStarRate): JSX.Element 
     <div className='relative flex items-center'>
       <div className='absolute inset-y-1/2'>
         <div className='flex space-x-3px transform -translate-y-1/2'>
-          {Array.from(Array(maxRate), () => <EmptyStar />)}
+          {Array.from(Array(maxRate), (_, index) => <EmptyStar key={index}/>)}
         </div>
       </div>
       <Ratings rating={rate} widgetSpacings='1.5px'>
-        {Array.from(Array(maxRate), () => (
-          <Ratings.Widget {...RATING_STAR_SVG_PROPS} />
+        {Array.from(Array(maxRate), (_, index) => (
+          <Ratings.Widget key={index} {...RATING_STAR_SVG_PROPS} />
         ))}
       </Ratings>
     </div>
