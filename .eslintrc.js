@@ -19,12 +19,13 @@ module.exports = {
     quotes: [2, 'single', { avoidEscape: true }],
     'sort-imports': 0,
     'import/order': 0,
-    'simple-import-sort/imports': 2,
-    'simple-import-sort/exports': 2,
+    'simple-import-sort/imports': 0,
+    'simple-import-sort/exports': 0,
     'import/first': 2,
     'import/newline-after-import': 2,
     'import/no-duplicates': 2,
     'import/no-extraneous-dependencies': 2,
+    '@typescript-eslint/no-extra-semi': 0,
     // compatible with other tools like prettier and so on
     '@typescript-eslint/member-delimiter-style': [
       2,

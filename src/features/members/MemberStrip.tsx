@@ -27,15 +27,18 @@ const MemberStrip: React.FC<TMemberStripProps> = ({
   return (
     <div className='flex space-x-30px'>
       {/* Member Card */}
-      <div className='w-244px h-142px' onClick={toMemberProfile}>
+      <div
+        className='min-w-[244px] h-142px cursor-pointer'
+        onClick={toMemberProfile}
+      >
         <MemberCard {...memberCard} />
       </div>
-      <div className='w-8/12 md:flex-grow border-b border-navigation-background'>
+      <div className='border-b border-navigation-background overflow-hidden'>
         <div className='flex space-x-4 h-full'>
           {/* Sale data */}
           <div className='flex flex-col justify-center h-full min-w-120px pr-21px'>
             <h6 className='text-gray-77 pb-1 text-12px'>Highest sold</h6>
-            <div className='w-max text-12px font-semibold border py-1 px-2 rounded-4px border-success-pressed text-success-pressed'>
+            <div className='w-max text-12px font-semibold border py-1 px-2 rounded border-success-pressed text-success-pressed'>
               {heighestSold} {currencyName}
             </div>
             <div className='text-gray-1a font-semibold pt-3 text-12px whitespace-nowrap overflow-x-hidden'>
@@ -47,7 +50,7 @@ const MemberStrip: React.FC<TMemberStripProps> = ({
             </div>
           </div>
           {/* Images */}
-          <div className='flex space-x-5 h-full overflow-x-auto overflow-y-hidden scrollbar-bg-white mt-2px'>
+          <div className='flex space-x-5 h-full overflow-x-auto overflow-y-hidden scrollbar-bg-white'>
             {images.map((imgSrc, i) => (
               <div
                 className='flex flex-col justify-center h-full '

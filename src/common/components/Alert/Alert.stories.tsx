@@ -10,14 +10,25 @@ const Template: Story<TAlert> = ({ variant, children, className }) => {
   )
 }
 
-export const AlertSuccessDefault = Template.bind({})
-const variant = 'success'
-const children = 'Alert Success'
-const className = 'w-full'
-AlertSuccessDefault.args = {
-  variant,
-  children,
-  className,
+export const Success = Template.bind({})
+Success.args = {
+  variant: 'success',
+  children: 'Alert Success',
+  className: 'w-full',
+}
+
+export const Warning = Template.bind({})
+Warning.args = {
+  variant: 'warning',
+  children: 'Alert Warning',
+  className: 'w-full',
+}
+
+export const Error = Template.bind({})
+Error.args = {
+  variant: 'error',
+  children: 'Alert Error',
+  className: 'w-full',
 }
 
 export default {

@@ -1,3 +1,3 @@
-import Scrollbar from './Scrollbar'
+import ScrollBar from './ScrollBar'
 
-export default Scrollbar
+export default ScrollBar

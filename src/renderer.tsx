@@ -34,11 +34,15 @@ import React from 'react'
 import { render } from 'react-dom'
 import { hot } from 'react-hot-loader' // has to stay first
 import { Provider } from 'react-redux'
+import { ipcRenderer } from 'electron'
 
 import PastelDB from './features/pastelDB/database'
 import { fetchPastelPrice } from './features/pastelPrice'
+import { createPastelKeysFolder } from './features/pastelID'
+import { setAppInfo } from './features/serveStatic'
 import Root from './legacy/containers/Root'
 import store from './redux/store'
+import { ToastContainer } from 'react-toastify'
 import 'common/utils/initDayjs'
 
 const oneHour = 1000 * 60 * 60
@@ -64,9 +68,24 @@ try {
   console.error(`PastelDB.getDatabaseInstance error: ${error.message}`)
 }
 
+ipcRenderer.on(
+  'app-info',
+  (
+    event,
+    {
+      isPackaged,
+      locatePastelConfDir,
+    }: { isPackaged: boolean; locatePastelConfDir: string },
+  ) => {
+    createPastelKeysFolder(locatePastelConfDir)
+    store.dispatch(setAppInfo({ isPackaged, locatePastelConfDir }))
+  },
+)
+
 const application = (
   <Provider store={store}>
     <Root />
+    <ToastContainer hideProgressBar autoClose={5000} />
   </Provider>
 )
 

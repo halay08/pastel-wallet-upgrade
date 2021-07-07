@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, ReactNode } from 'react'
 import ArrowToolTip from '../../assets/icons/ico-triangle.svg'
 import cn from 'classnames'
 import CSS from 'csstype'
@@ -6,47 +6,59 @@ import CSS from 'csstype'
 export type TTooltipProps = {
   type: 'left' | 'right' | 'top' | 'bottom'
   classnames?: string
-  content: string
-  width: number
+  content: ReactNode
+  width?: number
+  autoWidth?: boolean
+  padding?: number
+  wrapperClassNames?: string
+  vPosPercent?: number
 }
 
 const Tooltip: FunctionComponent<TTooltipProps> = ({
   type,
   classnames,
+  wrapperClassNames,
   content,
-  width,
+  width = 0,
+  autoWidth = false,
   children,
+  padding = 0,
+  vPosPercent = 150,
 }) => {
   const styles = {
     top: {
       width: `${width}px`,
-      bottom: '150%',
+      bottom: `${vPosPercent}%`,
       left: `calc(50% - ${width / 2}px)`,
+      padding: `${padding}px`,
     },
     bottom: {
       width: `${width}px`,
-      top: '150%',
+      top: `${vPosPercent}%`,
       left: `calc(50% - ${width / 2}px)`,
+      padding: `${padding}px`,
     },
     right: {
-      width: `${width}px`,
+      width: `${autoWidth ? 'auto' : width + 'px'}`,
       left: 'calc(100% + 10px)',
+      padding: `${padding}px`,
     },
     left: {
-      width: `${width}px`,
+      width: `${autoWidth ? 'auto' : width + 'px'}`,
       right: 'calc(100% + 10px)',
+      padding: `${padding}px`,
     },
   }
   const arrow_styles = {
     top: {
       width: '10px',
-      top: 'calc(150% - 8px)',
-      left: 'calc(50%)',
+      top: `calc(${vPosPercent}% - 8px)`,
+      left: '50%',
       marginLeft: '-5px',
     },
     bottom: {
       width: '10px',
-      bottom: 'calc(150% - 8px)',
+      bottom: `calc(${vPosPercent}% - 8px)`,
       left: '50%',
       marginLeft: '-5px',
       transform: 'rotate(180deg)',
@@ -66,37 +78,37 @@ const Tooltip: FunctionComponent<TTooltipProps> = ({
       marginTop: '-5px',
     },
   }
-  let style: CSS.Properties, astyle: CSS.Properties
+  let style: CSS.Properties, arrowStyle: CSS.Properties
   if (type === 'top') {
     style = styles.top
-    astyle = arrow_styles.bottom
+    arrowStyle = arrow_styles.bottom
   } else if (type === 'bottom') {
     style = styles.bottom
-    astyle = arrow_styles.top
+    arrowStyle = arrow_styles.top
   } else if (type === 'right') {
     style = styles.right
-    astyle = arrow_styles.left
+    arrowStyle = arrow_styles.left
   } else {
     style = styles.left
-    astyle = arrow_styles.right
+    arrowStyle = arrow_styles.right
   }
   return (
-    <div className='relative inline-block tooltip'>
+    <div className={cn('relative tooltip', wrapperClassNames)}>
       {children}
       <img
-        style={astyle}
+        style={arrowStyle}
         className='absolute tooltiparrow invisible'
         src={ArrowToolTip}
       />
-      <span
+      <div
         style={style}
         className={cn(
-          'absolute bg-black text-white text-center rounded-lg z-10 tooltiptext invisible',
+          'absolute bg-gray-14 text-white text-center rounded-lg z-10 tooltiptext invisible text-xs py-1 px-1.5',
           classnames,
         )}
       >
         {content}
-      </span>
+      </div>
     </div>
   )
 }

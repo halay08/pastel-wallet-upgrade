@@ -3,21 +3,28 @@ import cn from 'classnames'
 import Icon from '../Icon'
 import CheckIcon from '../../assets/icons/ico-check.svg'
 import TimesIcon from '../../assets/icons/ico-times.svg'
+import styles from './Input.css'
 
 export type TInput = {
   className?: string
   type?: 'text' | 'number' | 'tel' | 'email' | 'password'
   prepend?: ReactNode
   append?: ReactNode
+  appendOutside?: ReactNode
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onClick?: () => void
   isValid?: boolean | undefined
   label?: string
   id?: string
+  value?: string
   hint?: string
   errorMessage?: string | null
   disabled?: boolean
   placeholder?: string
+  labelClassName?: string
   [x: string]: React.MouseEventHandler<Element> | ReactNode | string | undefined
+  hintAsTooltip?: boolean
+  appliedStyleValid?: boolean
 }
 
 const Input = React.forwardRef<HTMLInputElement, TInput>(
@@ -28,83 +35,100 @@ const Input = React.forwardRef<HTMLInputElement, TInput>(
       type = 'text',
       prepend,
       append,
+      appendOutside,
       isValid,
       label,
       placeholder,
       id,
+      value,
       hint,
       errorMessage,
       disabled,
+      labelClassName = 'inline-block text-gray-71 text-h5 pb-2',
+      hintClassName = '',
+      onClick,
+      hintAsTooltip,
+      appliedStyleValid = true,
       ...otherProps
     },
     ref,
   ) => {
-    const classes = cn('relative flex items-center', className)
+    const classes = cn('relative flex items-center w-full', className)
 
     const wrapperClasses = cn({
       'cursor-not-allowed': disabled,
     })
 
     const inputClasses = cn({
-      'input-field w-full py-2 text-base placeholder-gray500 text-text-gray800 text-h5 focus:outline-none': true,
+      'input-field w-full py-2 text-base placeholder-gray500 text-text-gray800 text-h5 focus:outline-none placeholder-gray-a0 rounded': true,
       'pl-4': !prepend,
       'pl-2': prepend,
       'pr-4': !append,
       'pr-2': append,
       'input-number': type === 'number',
-      'is-valid': isValid === true,
+      'is-valid': isValid === true && appliedStyleValid,
       'is-invalid': isValid === false,
-      'pointer-events-none': disabled,
+      'pointer-events-none z-10': disabled,
     })
 
     const fieldsetClasses = cn({
       'absolute top-0 right-0 bottom-0 left-0 shadow-2px rounded pointer-events-none': true,
-      'bg-line -z-10': disabled,
+      'bg-line -z-20': disabled,
     })
 
     return (
       <div className={wrapperClasses}>
-        {label && (
-          <label
-            htmlFor={id}
-            className='inline-block text-gray-71 text-h5 pb-2'
-          >
-            {label}
-          </label>
-        )}
+        {label && <div className={labelClassName}>{label}</div>}
         <div className={classes}>
-          {prepend && <div className='pl-2'>{prepend}</div>}
+          <div className='relative flex items-center w-full' onClick={onClick}>
+            {prepend && <div className='pl-2 select-none'>{prepend}</div>}
+            <input
+              id={id}
+              ref={ref}
+              value={value}
+              className={inputClasses}
+              onChange={onChange}
+              type={type}
+              placeholder={placeholder}
+              {...otherProps}
+              disabled={disabled}
+            />
+            <fieldset className={fieldsetClasses} />
+            {hint && hintAsTooltip && (
+              <div
+                className={cn(
+                  'absolute bg-gray-35 text-white rounded-lg z-10 text-xs font-bold px-2 py-1 right-0 hintAsTooltip',
+                  styles.hintAsTooltip,
+                )}
+              >
+                {hint}
+              </div>
+            )}
 
-          <input
-            id={id}
-            ref={ref}
-            className={inputClasses}
-            onChange={onChange}
-            type={type}
-            placeholder={placeholder}
-            {...otherProps}
-            disabled={disabled}
-          />
-          <fieldset className={fieldsetClasses} />
+            {append && <div className='pr-2'>{append}</div>}
 
-          {append && <div className='pr-2'>{append}</div>}
-
-          {isValid === true && (
-            <div className='pr-2'>
-              <Icon src={CheckIcon} variant='center' />
-            </div>
-          )}
-          {isValid === false && (
-            <div className='pr-2 text-red-7a'>
-              <Icon src={TimesIcon} className='fill-current' />
+            {isValid === true && (
+              <div className='pr-2'>
+                <Icon src={CheckIcon} variant='center' />
+              </div>
+            )}
+            {isValid === false && <img src={TimesIcon} className='w-3 mr-3' />}
+          </div>
+          {appendOutside && (
+            <div className='ml-4 select-none' onClick={onClick}>
+              {appendOutside}
             </div>
           )}
         </div>
-        {(errorMessage || hint) && (
+
+        {(errorMessage || (hint && !hintAsTooltip)) && (
           <p
-            className={`${
-              isValid === false ? 'text-red-7a' : 'text-button-text'
-            } text-h6 pt-1`}
+            className={cn(
+              `${
+                isValid === false ? 'text-red-fe' : 'text-gray-a0'
+              } text-xs leading-5 pt-1`,
+              hintClassName,
+            )}
           >
             {errorMessage ? errorMessage : hint}
           </p>

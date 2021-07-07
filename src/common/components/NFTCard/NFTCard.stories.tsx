@@ -4,9 +4,9 @@ import { MemoryRouter } from 'react-router-dom'
 
 import avatar from '../../../common/assets/images/avatar-placeholder.png'
 import image from '../../../common/assets/images/nft-card-placeholder.png'
-import NFTCardComponent, { INFTCardProps } from './NFTCard'
+import NFTCardComponent, { TNFTCard } from './NFTCard'
 
-const mockCardProps: INFTCardProps = {
+const mockCardProps: TNFTCard = {
   author: 'zndrson',
   avatarSrc: avatar,
   imageSrc: image,
@@ -17,6 +17,7 @@ const mockCardProps: INFTCardProps = {
   currencyName: 'PSL',
   title: 'Cosmic Perspective',
   className: 'w-300px',
+  followers: 0,
 }
 
 export default {
@@ -24,7 +25,7 @@ export default {
   component: NFTCardComponent,
 } as Meta
 
-const Template: Story<INFTCardProps> = props => {
+const Template: Story<TNFTCard> = props => {
   return (
     <MemoryRouter>
       <div className='grid grid-cols-4 gap-10'>

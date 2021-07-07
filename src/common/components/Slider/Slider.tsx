@@ -1,35 +1,25 @@
-import React, { CSSProperties } from 'react'
+import React from 'react'
 import { Range } from 'react-range'
+import cn from 'classnames'
+import { SliderShape, TWidth } from './SliderShape'
+import {
+  fractionToValue,
+  sliderMax,
+  sliderValueToPercent,
+  valueToFraction,
+} from './slider.utils'
 
-const SliderShape = ({
-  className,
-  style,
-}: {
-  className?: string
-  style?: CSSProperties
-}) => {
-  return (
-    <svg
-      className={className}
-      style={style}
-      viewBox='0 0 311 16'
-      fill='none'
-      xmlns='http://www.w3.org/2000/svg'
-    >
-      <path
-        d='M0 8C0 6.88924 0.889079 5.98285 1.99963 5.96142L303.001 0.154312C307.394 0.0695737 311 3.60691 311 8C311 12.3931 307.394 15.9304 303.001 15.8457L1.99963 10.0386C0.889079 10.0172 0 9.11076 0 8Z'
-        fill='currentColor'
-      />
-    </svg>
-  )
-}
+type TVariant = 'default' | 'stickToBottom'
 
-export type SliderProps = {
-  min: number
-  max: number
-  style?: CSSProperties
+export type TSliderProps = {
+  width?: TWidth
+  variant?: TVariant
+  hideLabel?: boolean
   formatValue?: (value: number) => number | string
   formatTooltipValue?: (value: number) => number | string
+  className?: string
+  valuesClassName?: string
+  minMaxClassName?: string
 } & (
   | {
       value: number
@@ -39,72 +29,130 @@ export type SliderProps = {
       values: [number, number]
       onChange: (values: [number, number]) => void
     }
-)
-
-const defaultStyle = {
-  width: '19rem',
-}
+) &
+  (
+    | {
+        min: number
+        max: number
+      }
+    | {
+        steps: number[]
+      }
+  )
 
 const defaultFormat = (value: number) => value
 
 export default function Slider({
-  min,
-  max,
-  style = defaultStyle,
+  width = 311,
+  variant = 'default',
+  hideLabel,
   formatValue = defaultFormat,
   formatTooltipValue = formatValue,
+  className,
+  valuesClassName,
+  minMaxClassName = 'top-5 text-gray-2d text-sm',
   ...props
-}: SliderProps): JSX.Element {
+}: TSliderProps): JSX.Element {
+  const stickToBottom = variant === 'stickToBottom'
+  const [min, max] =
+    'steps' in props
+      ? [props.steps[0], props.steps[props.steps.length - 1]]
+      : [props.min, props.max]
+
   let values: number[]
   let setValues: (values: number[]) => void
   let startPercent: number
   let endPercent: number
 
   if ('value' in props) {
-    values = [props.value]
-    setValues = values => props.onChange(values[0])
+    values = [valueToFraction(props, props.value)]
+    setValues = values => props.onChange(fractionToValue(props, values[0]))
     startPercent = 0
-    endPercent = ((props.value - min) * 100) / (max - min)
+    endPercent = sliderValueToPercent(values[0])
   } else {
-    values = props.values
-    setValues = values => props.onChange(values as [number, number])
-    startPercent = ((values[0] - min) * 100) / (max - min)
-    endPercent = ((values[1] - min) * 100) / (max - min)
+    values = [
+      valueToFraction(props, props.values[0]),
+      valueToFraction(props, props.values[1]),
+    ]
+    setValues = values => {
+      props.onChange([
+        fractionToValue(props, values[0]),
+        fractionToValue(props, values[1]),
+      ])
+    }
+    startPercent = sliderValueToPercent(values[0])
+    endPercent = sliderValueToPercent(values[1])
   }
 
   return (
     <Range
-      min={min}
-      max={max}
+      min={0}
+      max={sliderMax}
       values={values}
       onChange={values => setValues(values as [number, number])}
-      renderTrack={({ props, children }) => (
-        <div {...props} className='h-4 rounded relative' style={style}>
-          <SliderShape className='w-full h-full text-gray-e6' />
-          <SliderShape
-            className='w-full h-full text-blue-3f absolute inset-0'
-            style={{
-              clipPath: `polygon(${startPercent}% 0, ${endPercent}% 0, ${endPercent}% 100%, ${startPercent}% 100%)`,
-            }}
-          />
-          {children}
-          <div className='absolute left-0 top-5 text-gray-2d text-sm'>
-            {formatValue(min)}
+      renderTrack={({ props: trackProps, children }) => (
+        <div
+          className={cn('h-4 rounded relative group', className)}
+          style={{
+            width: `${width}px`,
+          }}
+        >
+          <div
+            {...trackProps}
+            style={
+              stickToBottom
+                ? {
+                    ...trackProps.style,
+                    transform: `${trackProps.style.transform} rotate(-1.3deg)`,
+                  }
+                : trackProps.style
+            }
+          >
+            <SliderShape className='w-full h-full text-gray-e6' width={width} />
+            <SliderShape
+              className='w-full h-full text-blue-3f absolute inset-0'
+              width={width}
+              style={{
+                clipPath: `polygon(${startPercent}% 0, ${endPercent}% 0, ${endPercent}% 100%, ${startPercent}% 100%)`,
+              }}
+            />
+            {children}
           </div>
-          <div className='absolute right-0 top-5 text-gray-2d text-sm'>
-            {formatValue(max)}
-          </div>
+          {!hideLabel && (
+            <div
+              className={cn('flex-between whitespace-nowrap', valuesClassName)}
+            >
+              <div className='w-0 flex-center'>
+                <div className={minMaxClassName}>{formatValue(min)}</div>
+              </div>
+              {'steps' in props &&
+                props.steps.slice(1, props.steps.length - 1).map(step => (
+                  <div key={step} className='w-0 flex-center'>
+                    <div className='text-xs font-medium text-gray-a0'>
+                      {formatValue(step)}
+                    </div>
+                  </div>
+                ))}
+              <div className='w-0 flex-center'>
+                <div className={minMaxClassName}>{formatValue(max)}</div>
+              </div>
+            </div>
+          )}
         </div>
       )}
-      renderThumb={({ props, value }) => (
+      renderThumb={({ props: thumbProps, value }) => (
         <button
-          className='absolute top-0 -ml-3 w-6 h-6 bg-white rounded-full shadow-depth-1 flex-center focus:outline-none'
-          {...props}
+          type='button'
+          className={cn(
+            'absolute top-0 -ml-3 w-6 h-6 bg-white rounded-full shadow-depth-1 flex-center focus:outline-none',
+            stickToBottom && '-top-1',
+          )}
+          {...thumbProps}
         >
           <div className='w-4 h-4 bg-blue-3f rounded-full' />
-          <div className='absolute -top-9 flex flex-col items-center'>
-            <div className='bg-gray-14 rounded-md h-7 px-2 flex-center text-xs whitespace-nowrap text-white'>
-              {formatTooltipValue(value)}
+          <div className='absolute -top-8 -mt-0.5 flex flex-col items-center duration-200 transition opacity-0 group-hover:opacity-100'>
+            <div className='bg-gray-14 rounded-md h-7 px-2 flex-center text-xs whitespace-nowrap text-white font-extrabold'>
+              {formatTooltipValue(fractionToValue(props, value))}
             </div>
             <svg
               width='12'

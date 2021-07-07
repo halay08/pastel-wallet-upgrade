@@ -7,7 +7,6 @@ const Template: Story<TButton> = ({
   variant,
   href,
   disabled,
-  fluid,
   className,
   ...args
 }) => {
@@ -16,7 +15,6 @@ const Template: Story<TButton> = ({
       variant={variant}
       href={href}
       disabled={disabled}
-      fluid={fluid}
       className={className}
       {...args}
     >
@@ -29,18 +27,17 @@ export const ButtonDefault = Template.bind({})
 const children = 'button'
 const variant = 'default'
 const disabled = false
-const fluid = false
 const className = ''
 ButtonDefault.args = {
   children,
   variant,
   disabled,
-  fluid,
   className,
 }
 
 export const ButtonIconDefault: React.FC = () => (
   <Button
+    className='w-60'
     variant='default'
     prepend={
       <svg

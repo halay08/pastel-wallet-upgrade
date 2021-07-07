@@ -5,34 +5,34 @@ export type TButton = {
   children?: ReactNode | string
   variant?: 'default' | 'secondary' | 'transparent' | 'navigation'
   disabled?: boolean
+  disabledBule?: boolean
   href?: string
   className?: string
-  fluid?: boolean
   prepend?: ReactNode
   append?: ReactNode
   type?: 'button' | 'submit'
+  width?: number
+  secondary?: true
   [x: string]: React.MouseEventHandler<Element> | ReactNode | string | undefined
 }
 
-const Button: React.FC<TButton> = ({
+const Button = ({
   children,
-  variant = 'default',
+  secondary,
+  variant = secondary ? 'secondary' : 'default',
   href,
   disabled,
   prepend,
   append,
-  fluid,
   type,
   className,
   ...otherProps
-}) => {
+}: TButton): JSX.Element => {
   const Tag = href ? 'a' : 'button'
 
   const classes = cn(
     {
-      'button inline-flex items-center px-2 h-10 justify-center rounded-2xl transition duration-300 focus:outline-none active:shadow-none focus:shadow-btnOutline max-w-full leading-none': true,
-      'w-full': fluid,
-      'w-60': !fluid,
+      'button flex items-center px-2 h-10 justify-center rounded-2xl transition duration-300 focus:outline-none active:shadow-none focus:shadow-btnOutline max-w-full leading-none': true,
       'bg-button hover:bg-button-hover active:bg-blue-pressed text-white':
         variant === 'default' && !disabled,
       'bg-button-background text-button-text cursor-not-allowed':
@@ -66,21 +66,9 @@ const Button: React.FC<TButton> = ({
           disabled={disabled}
           {...otherProps}
         >
-          {prepend && (
-            <span className='pr-2'>
-              {React.cloneElement(prepend as React.ReactElement, {
-                className: 'fill-current',
-              })}
-            </span>
-          )}
+          {prepend && <span className='pr-2'>{prepend}</span>}
           <span>{children}</span>
-          {append && (
-            <span className='pl-2'>
-              {React.cloneElement(append as React.ReactElement, {
-                className: 'fill-current',
-              })}
-            </span>
-          )}
+          {append && <span className='pl-2'>{append}</span>}
         </Tag>
       )}
     </>

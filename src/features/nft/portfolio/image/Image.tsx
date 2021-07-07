@@ -3,14 +3,18 @@ import style from './Image.module.css'
 import { Expand, Flag, Trash } from 'common/components/Icons'
 import { TNFT } from '../../Nft.types'
 import { formatDate } from 'common/utils/format'
+import { useToggle } from 'react-use'
+import PictureModal from 'features/nft/nftModals/PictureModal'
 
 type TImageProps = {
   nft: TNFT
 }
 
 export default function Image({ nft }: TImageProps): JSX.Element {
+  const [isShowPictureModal, toggleShowPictureModal] = useToggle(false)
+
   return (
-    <div className='flex-center flex-col'>
+    <div className='flex-center flex-col md:flex-row md:items-start'>
       <div>
         <div className='relative'>
           <img src={nft.image} className='object-cover' />
@@ -23,6 +27,7 @@ export default function Image({ nft }: TImageProps): JSX.Element {
           <button
             type='button'
             className='w-10 h-10 absolute left-6 bottom-6 rounded-full bg-gray-fc flex-center duration-200 transition text-gray-77 hover:text-gray-8e'
+            onClick={toggleShowPictureModal}
           >
             <Expand size={14} />
           </button>
@@ -46,6 +51,11 @@ export default function Image({ nft }: TImageProps): JSX.Element {
           <div>My NFT before {formatDate(nft.time)}</div>
         </div>
       </div>
+
+      <PictureModal
+        isOpen={isShowPictureModal}
+        handleClose={toggleShowPictureModal}
+      />
     </div>
   )
 }
