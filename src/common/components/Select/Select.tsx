@@ -176,7 +176,9 @@ const SelectInner = (props: TOptionsProps | TRangeProps) => {
                 {...getToggleButtonProps()}
               >
                 {label && <span className='text-gray-b0 mr-2'>{label}</span>}
-                {selectedItem ? selectedItem.label : placeholder}
+                <span className='truncate'>
+                  {selectedItem ? selectedItem.label : placeholder}
+                </span>
               </button>
             )}
             <img
