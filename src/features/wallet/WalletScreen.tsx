@@ -19,13 +19,7 @@ import TransactionHistoryModal from './TransactionHistoryModal'
 import ExportKeysModal from './ExportKeysModal'
 import Breadcrumbs from '../../common/components/Breadcrumbs'
 import { ControlRPC, WalletRPC } from 'api/pastel-rpc'
-import {
-  TAddressBook,
-  TAddressRow,
-  TBalanceCard,
-  TInfo,
-  TTotalBalance,
-} from 'types/rpc'
+import { TAddressRow, TBalanceCard, TInfo, TTotalBalance } from 'types/rpc'
 import QRCode from 'qrcode.react'
 import { useAppSelector } from 'redux/hooks'
 import { RootState } from '../../redux/store'
@@ -34,12 +28,8 @@ import { AddressForm } from './AddressForm'
 import Alert from 'common/components/Alert'
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
-import {
-  isSapling,
-  isTransparent,
-  readAddressBook,
-  writeAddressBook,
-} from 'api/helpers'
+import { isSapling, isTransparent } from 'api/helpers'
+import { useAddressBook } from 'common/hooks'
 
 const paymentSources = [
   {
@@ -208,8 +198,11 @@ const WalletScreen = (): JSX.Element => {
   const [walletOriginAddresses, setWalletOriginAddresses] = useState<
     TAddressRow[]
   >([])
-  const [addressBook, setAddressBook] = useState<TAddressBook[]>([])
-
+  const {
+    addressBook,
+    updateAddressBook,
+    isAddressBookLoaded,
+  } = useAddressBook()
   /**
    * Fetch total balances
    */
@@ -259,8 +252,6 @@ const WalletScreen = (): JSX.Element => {
       return map
     }, {} as { [addr: string]: number })
 
-    const addressBook = await fetchAddressBook()
-
     // Get addresses
     const addressMapper = async (a: string) => {
       const type = isSapling(a) ? 'shielded' : 'transparent'
@@ -298,15 +289,6 @@ const WalletScreen = (): JSX.Element => {
     setInfo(inf)
   }
 
-  /**
-   * Fetch address book from JSON file
-   */
-  const fetchAddressBook = async (): Promise<TAddressBook[]> => {
-    const addrBook: TAddressBook[] = await readAddressBook()
-    setAddressBook(addrBook)
-    return addrBook
-  }
-
   const saveAddressLabel = (address: string, label: string): void => {
     // Update address nick
     const newWalletAddress: TAddressRow[] = walletAddresses.map(a => {
@@ -317,26 +299,7 @@ const WalletScreen = (): JSX.Element => {
     })
     setWalletAddresses(newWalletAddress)
 
-    // Update address book
-    const [book] = addressBook.filter(b => b.address === address) || []
-    let newAddressBook = addressBook
-    if (book) {
-      newAddressBook = addressBook.map(b => {
-        return {
-          ...b,
-          label: b.address === address ? label : b.label,
-        }
-      })
-    } else {
-      newAddressBook = addressBook.concat([
-        {
-          address,
-          label,
-        },
-      ])
-    }
-
-    writeAddressBook(newAddressBook)
+    updateAddressBook({ address, label })
   }
 
   useEffect(() => {
@@ -347,8 +310,10 @@ const WalletScreen = (): JSX.Element => {
         fetchWalletAddresses(),
       ])
     }
-    getTotalBalances()
-  }, [])
+    if (isAddressBookLoaded) {
+      getTotalBalances()
+    }
+  }, [isAddressBookLoaded])
 
   useEffect(() => {
     let tempSelectedAmount = 0
