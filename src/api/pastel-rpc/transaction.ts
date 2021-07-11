@@ -226,6 +226,6 @@ export class TransactionRPC {
    * @returns
    */
   async sendTransaction(data: TRpcParam[]): Promise<TResponse<string>> {
-    return rpc<TResponse<string>>('z_sendmany', data, this.config)
+    return rpc<TResponse<string>>('z_sendmanywithchangetosender', data, this.config)
   }
 }
