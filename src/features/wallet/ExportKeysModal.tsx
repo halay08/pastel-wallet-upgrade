@@ -21,14 +21,19 @@ type TPDFDocumentProps = {
   privateKey: string
 }
 
+const pdfStyles = {
+  marginTop: 30,
+  marginRight: 30,
+  marginLeft: 30,
+}
 const PDFDocument = ({ publicKey, privateKey }: TPDFDocumentProps) => {
   return (
     <Document title='Crypto Keys'>
       <Page size='A4'>
-        <View>
+        <View style={pdfStyles}>
           <Text>Public Key: {publicKey}</Text>
         </View>
-        <View>
+        <View style={pdfStyles}>
           <Text>Private Key: {privateKey}</Text>
         </View>
       </Page>
@@ -74,8 +79,8 @@ const ExportKeysModal: React.FC<ExportKeysModalProps> = ({
 
   const getPdfFilename = () => {
     const key = (publicKey || privateKey).substr(0, 16)
-    const datetime = dayjs().format('YYYY-MM-DDTHH:mm:ssZ[Z]')
-    return `[${currencyName}]_Paper_Wallet__Address_${key}_${datetime}.pdf`
+    const datetime = dayjs().format('MM_DD_YYYY__hh_mm_ss')
+    return `${currencyName}_Paper_Wallet__Address_${key}_${datetime}.pdf`
   }
 
   return (
