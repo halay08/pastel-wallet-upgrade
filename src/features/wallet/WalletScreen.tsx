@@ -19,7 +19,13 @@ import TransactionHistoryModal from './TransactionHistoryModal'
 import ExportKeysModal from './ExportKeysModal'
 import Breadcrumbs from '../../common/components/Breadcrumbs'
 import { ControlRPC, WalletRPC } from 'api/pastel-rpc'
-import { TAddressRow, TBalanceCard, TInfo, TTotalBalance } from 'types/rpc'
+import {
+  TAddressRow,
+  TBalanceCard,
+  TInfo,
+  TTotalBalance,
+  TAddressBalance,
+} from 'types/rpc'
 import QRCode from 'qrcode.react'
 import { useAppSelector } from 'redux/hooks'
 import { RootState } from '../../redux/store'
@@ -28,7 +34,7 @@ import { AddressForm } from './AddressForm'
 import Alert from 'common/components/Alert'
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
-import { isSapling, isTransparent } from 'api/helpers'
+import { isSapling } from 'api/helpers'
 import { useAddressBook } from 'common/hooks'
 
 const paymentSources = [
@@ -247,38 +253,28 @@ const WalletScreen = (): JSX.Element => {
   const fetchWalletAddresses = async () => {
     // Get addresses with balance
     const balanceAddresses = await walletRPC.fetchTandZAddressesWithBalance()
-    const addressMap = balanceAddresses.reduce((map, a) => {
-      map[a.address] = a.balance
-      return map
-    }, {} as { [addr: string]: number })
-
-    // Get addresses
-    const addressMapper = async (a: string) => {
-      const type = isSapling(a) ? 'shielded' : 'transparent'
-      const [book] = addressBook.filter(b => b.address === a) || []
-      return {
-        id: a,
-        address: a,
-        amount: addressMap[a],
-        psl: info.pslPrice || 0,
-        type: type,
-        time: '',
-        qrCode: '',
-        viewKey: '',
-        privateKey: '',
-        addressNick: book ? book.label : '',
-      } as TAddressRow
-    }
-
-    const addresses = await walletRPC.fetchAllAddresses()
-    const zaddrs: TAddressRow[] = await Promise.all(
-      addresses.filter(a => isSapling(a)).map(addressMapper),
+    const addresses: TAddressRow[] = balanceAddresses.map(
+      (a: TAddressBalance) => {
+        const address = a.address.toString()
+        const type = isSapling(address) ? 'shielded' : 'transparent'
+        const [book] = addressBook.filter(b => b.address === address) || []
+        return {
+          id: address,
+          address: address,
+          amount: a.balance,
+          psl: info.pslPrice || 0,
+          type: type,
+          time: '',
+          qrCode: '',
+          viewKey: '',
+          privateKey: '',
+          addressNick: book ? book.label : '',
+        } as TAddressRow
+      },
     )
-    const taddrs: TAddressRow[] = await Promise.all(
-      addresses.filter(a => isTransparent(a)).map(addressMapper),
-    )
-    setWalletAddresses(zaddrs.concat(taddrs))
-    setWalletOriginAddresses(zaddrs.concat(taddrs))
+
+    setWalletAddresses(addresses)
+    setWalletOriginAddresses(addresses)
   }
 
   /**
