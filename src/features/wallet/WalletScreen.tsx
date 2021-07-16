@@ -6,7 +6,6 @@ import placeholderIcon from '../../common/assets/icons/ico-placeholder.svg'
 import elminationIcon from '../../common/assets/icons/ico-elmination.svg'
 import clockIcon from '../../common/assets/icons/ico-clock.svg'
 import plusIcon from '../../common/assets/icons/ico-plus.svg'
-import electIcon from '../../common/assets/icons/ico-elect.svg'
 import Tooltip from '../../common/components/Tooltip'
 import Toggle from '../../common/components/Toggle'
 import Button from '../../common/components/Button/Button'
@@ -24,7 +23,7 @@ import {
   TBalanceCard,
   TInfo,
   TTotalBalance,
-  TAddressBalance,
+  AddressTab,
 } from 'types/rpc'
 import QRCode from 'qrcode.react'
 import { useAppSelector } from 'redux/hooks'
@@ -34,8 +33,10 @@ import { AddressForm } from './AddressForm'
 import Alert from 'common/components/Alert'
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
-import { isSapling } from 'api/helpers'
+import { isSapling, isTransparent } from 'api/helpers'
 import { useAddressBook } from 'common/hooks'
+import { ADDRESS_TYPES } from '../../common/constants/wallet'
+import { AddressGeneratorButton } from './AddressGeneratorButton'
 
 const paymentSources = [
   {
@@ -253,28 +254,39 @@ const WalletScreen = (): JSX.Element => {
   const fetchWalletAddresses = async () => {
     // Get addresses with balance
     const balanceAddresses = await walletRPC.fetchTandZAddressesWithBalance()
-    const addresses: TAddressRow[] = balanceAddresses.map(
-      (a: TAddressBalance) => {
-        const address = a.address.toString()
-        const type = isSapling(address) ? 'shielded' : 'transparent'
-        const [book] = addressBook.filter(b => b.address === address) || []
-        return {
-          id: address,
-          address: address,
-          amount: a.balance,
-          psl: info.pslPrice || 0,
-          type: type,
-          time: '',
-          qrCode: '',
-          viewKey: '',
-          privateKey: '',
-          addressNick: book ? book.label : '',
-        } as TAddressRow
-      },
+    const addressMap = balanceAddresses.reduce((map, a) => {
+      map[a.address] = a.balance
+      return map
+    }, {} as { [addr: string]: number })
+
+    // Get addresses
+    const addressMapper = async (a: string) => {
+      const type = isSapling(a) ? 'shielded' : 'transparent'
+      const [book] = addressBook.filter(b => b.address === a) || []
+      return {
+        id: a,
+        address: a,
+        amount: addressMap[a],
+        psl: info.pslPrice || 0,
+        type: type,
+        time: '',
+        qrCode: '',
+        viewKey: '',
+        privateKey: '',
+        addressNick: book ? book.label : '',
+      } as TAddressRow
+    }
+
+    const addresses = await walletRPC.fetchAllAddresses()
+    const zaddrs: TAddressRow[] = await Promise.all(
+      addresses.filter(a => isSapling(a)).map(addressMapper),
+    )
+    const taddrs: TAddressRow[] = await Promise.all(
+      addresses.filter(a => isTransparent(a)).map(addressMapper),
     )
 
-    setWalletAddresses(addresses)
-    setWalletOriginAddresses(addresses)
+    setWalletAddresses(zaddrs.concat(taddrs))
+    setWalletOriginAddresses(zaddrs.concat(taddrs))
   }
 
   /**
@@ -298,14 +310,10 @@ const WalletScreen = (): JSX.Element => {
     updateAddressBook({ address, label })
   }
 
+  const getTotalBalances = () => {
+    Promise.all([fetchInfo(), fetchTotalBalances(), fetchWalletAddresses()])
+  }
   useEffect(() => {
-    const getTotalBalances = async () => {
-      await Promise.all([
-        fetchInfo(),
-        fetchTotalBalances(),
-        fetchWalletAddresses(),
-      ])
-    }
     if (isAddressBookLoaded) {
       getTotalBalances()
     }
@@ -345,6 +353,25 @@ const WalletScreen = (): JSX.Element => {
     } else {
       setWalletAddresses(walletOriginAddresses)
     }
+  }
+
+  const isTotalTab = active === AddressTab.TOTAL
+
+  const generateAddress = async () => {
+    const newAddress = await walletRPC.createNewAddress(
+      ADDRESS_TYPES[
+        active === AddressTab.SHIELDED ? 'SHIELDED' : 'TRANSPARENT'
+      ],
+    )
+
+    if (!newAddress) {
+      return
+    }
+
+    getTotalBalances()
+
+    setExportKeysModalOpen(true)
+    setCurrentAddress(newAddress)
   }
 
   return (
@@ -453,7 +480,7 @@ const WalletScreen = (): JSX.Element => {
         {walletAddresses.length > 0 && (
           <div className='bg-white mt-3.5 pt-6 rounded-lg mt-27px min-w-594px'>
             <div className='h-526px overflow-y-auto mr-4 pr-4 overflow-x-hidden ml-9'>
-              {active !== 0 && (
+              {!isTotalTab && (
                 <Table
                   data={
                     active === 1
@@ -469,7 +496,7 @@ const WalletScreen = (): JSX.Element => {
                   selectedRow={setSelectedRowsFunction}
                 />
               )}
-              {active == 0 && (
+              {isTotalTab && (
                 <div>
                   <div className='uppercase text-gray-2d text-h6 font-extrabold mb-1'>
                     transparent
@@ -529,28 +556,20 @@ const WalletScreen = (): JSX.Element => {
               <div className='text-gray-4a text-base text-center mb-3.5'>
                 You have no Addresses
               </div>
-              <Button variant='transparent' className='w-247px'>
-                <div className='flex items-center  ml-6'>
-                  <img src={electIcon} className='py-3' />
-                  <span className='text-sm ml-11px'>
-                    Generate a new PSL Address
-                  </span>
-                </div>
-              </Button>
+              <AddressGeneratorButton
+                disabled={isTotalTab}
+                onClick={generateAddress}
+              />
             </div>
           </div>
         )}
 
         <div className='flex justify-end mt-5 mb-10'>
           {walletAddresses.length > 0 && (
-            <Button variant='transparent' className='w-247px'>
-              <div className='flex items-center  ml-6'>
-                <img src={electIcon} className='py-3' />
-                <span className='text-sm ml-11px'>
-                  Generate a new PSL Address
-                </span>
-              </div>
-            </Button>
+            <AddressGeneratorButton
+              disabled={isTotalTab}
+              onClick={generateAddress}
+            />
           )}
           <Button
             onClick={() => setPaymentModalOpen(true)}

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 interface ButtonProps {
   $variant: 'default' | 'transparent' | 'navigation'
   width?: string
+  disabled?: boolean
 }
 
 export const Button = styled.button<ButtonProps>`
@@ -21,7 +22,7 @@ export const Button = styled.button<ButtonProps>`
       : theme.colors.button.default};
   border-radius: 16px;
   border: 1px solid ${({ theme }) => theme.colors.button.default};
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   transition: all 0.3s ease-out;
 
   &:focus {
