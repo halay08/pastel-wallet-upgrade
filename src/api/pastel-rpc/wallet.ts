@@ -10,9 +10,11 @@ import {
   TTotalBalance,
   TZListUnspentResponse,
   TZListUnspent,
+  TAddressResponse,
 } from '../../types/rpc'
 import { isTransparent, isZaddr } from '../helpers'
 import { rpc, TRPCConfig } from './rpc'
+import { ADDRESS_TYPES } from '../../common/constants/wallet'
 
 export class WalletRPC {
   /**
@@ -248,4 +250,16 @@ export class WalletRPC {
 
     return zAddresses.concat(tAddresses)
   } // Fetch all T and Z addresses
+
+  async createNewAddress(
+    type: string = ADDRESS_TYPES.SHIELDED,
+  ): Promise<string> {
+    const isShielded = type === ADDRESS_TYPES.SHIELDED
+    const { result } = await rpc<TAddressResponse>(
+      isShielded ? 'z_getnewaddress' : 'getnewaddress',
+      [],
+      this.config,
+    )
+    return result
+  }
 }

@@ -1,5 +1,11 @@
 import { TResponse } from './response'
 
+enum AddressTab {
+  TOTAL = 0,
+  TRANSPARENT = 1,
+  SHIELDED = 2,
+}
+
 type TAddressBalance = {
   address: string | number
   balance: number
@@ -165,6 +171,7 @@ type TAddressMempool = {
   prevout: string
 }
 
+type TAddressResponse = TResponse<string>
 type TAddressTxIdResponse = TResponse<string[]>
 type TWalletInfoResponse = TResponse<TWalletInfo>
 type TListAddressesResponse = TResponse<string[]>
@@ -178,6 +185,7 @@ type TValidateAddressesResponse = TResponse<TValidateAddress>
 type TZListUnspentResponse = TResponse<TZListUnspent[]>
 type TZListReceivedByAddressResponse = TResponse<TZListReceivedByAddress[]>
 
+export { AddressTab }
 export type {
   TUtxo,
   TWalletInfo,
@@ -197,6 +205,7 @@ export type {
   TShieldedSpendInfo,
   TWalletInfoResponse,
   TZListUnspent,
+  TAddressResponse,
   TAddressTxIdResponse,
   TListUnspentResponse,
   TAddressTxosResponse,

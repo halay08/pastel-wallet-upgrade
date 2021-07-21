@@ -8,6 +8,7 @@ export interface IButtonProps {
   style?: CSSProperties
   className?: string
   onClick?: () => void
+  disabled?: boolean
 }
 
 const Button: React.FC<IButtonProps> = ({
@@ -15,6 +16,7 @@ const Button: React.FC<IButtonProps> = ({
   variant = 'default',
   type = 'button',
   onClick,
+  disabled,
   ...restProps
 }) => {
   const handleClick = (
@@ -36,6 +38,7 @@ const Button: React.FC<IButtonProps> = ({
       $variant={variant}
       {...restProps}
       onClick={handleClick}
+      disabled={disabled}
     >
       {children}
     </Styles.Button>
